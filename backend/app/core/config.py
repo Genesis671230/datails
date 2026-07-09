@@ -58,8 +58,9 @@ class Settings(BaseSettings):
     crystal_transport: Literal["replay", "live"] = "replay"
     crystal_base_url: str = ""
     crystal_shared_secret_ref: str = "CRYSTAL_API_KEY"
-    # Global daily budget for the shared pilot key, across all tenants (LD-22).
-    crystal_shared_daily_budget: int = 500
+    # Global daily budget for a Datails-shared key, across all tenants
+    # (LD-22 shared-key arbitration; pilot: the shared Crystal key).
+    shared_key_daily_budget: int = 500
 
     @model_validator(mode="after")
     def _forbid_dev_mode_outside_local(self) -> "Settings":

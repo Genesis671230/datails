@@ -52,6 +52,16 @@ class ConflictError(AppError):
     code = "conflict"
 
 
+class LimitExceededError(AppError):
+    status_code = status.HTTP_429_TOO_MANY_REQUESTS
+    code = "limit_exceeded"
+
+
+class UpstreamError(AppError):
+    status_code = status.HTTP_502_BAD_GATEWAY
+    code = "upstream_error"
+
+
 def _error_response(status_code: int, code: str, message: str) -> JSONResponse:
     return JSONResponse(
         status_code=status_code,
