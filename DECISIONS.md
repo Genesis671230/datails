@@ -71,6 +71,15 @@ INSERT+SELECT only and installs UPDATE/DELETE-rejecting triggers (defense in
 depth against owner-role connections too). Locally the app role is provisioned
 by `backend/db-init/01-app-role.sql`; in Azure by deployment tooling.
 
+### Idempotency records successful responses only (Slice 1, LD-28)
+
+Only 2xx responses are stored for replay. A failed outcome (missing
+connector, upstream error) stays retryable under the same Idempotency-Key —
+freezing an error response forever would defeat the retry purpose of the
+mechanism. Replayed responses carry `X-Idempotent-Replay: true`. Response
+payloads are stored via the blob backend; `idempotency_keys.response_ref`
+holds the reference (05 §11 shape unchanged).
+
 ### Health endpoint reports liveness only
 
 `/api/v1/health` (the only unauthenticated route, LD-1) does not gate on

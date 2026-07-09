@@ -13,6 +13,7 @@ from app.api.v1 import cases, connectors, decisions, findings, health, ledger, w
 from app.core.auth import EntraJwtMiddleware
 from app.core.config import get_settings
 from app.core.errors import register_error_handlers
+from app.core.idempotency import IdempotencyMiddleware
 from app.core.logging import configure_logging, get_logger, log_fields
 from app.core.request_context import RequestContextMiddleware
 
@@ -50,7 +51,10 @@ def create_app() -> FastAPI:
     )
 
     # Middleware order (outermost first at request time): request context
-    # assigns request_id before auth runs, so 401s are correlated too.
+    # assigns request_id, then auth validates the token, then idempotency
+    # (which needs the validated claims) guards expensive POSTs (LD-28).
+    # Starlette runs middleware in reverse add order.
+    app.add_middleware(IdempotencyMiddleware)
     app.add_middleware(EntraJwtMiddleware)
     app.add_middleware(RequestContextMiddleware)
     register_error_handlers(app)

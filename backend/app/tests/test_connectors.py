@@ -16,7 +16,7 @@ from app.db.models import (
     DataLedgerEntry,
     WalletLabel,
 )
-from app.tests.helpers import bootstrap_tenant, create_case
+from app.tests.helpers import bootstrap_tenant, create_case, idem_headers
 
 LOOKUP = "/api/v1/connectors/crystal/wallet-lookup"
 LOOKUP_ATTACH = "/api/v1/connectors/crystal/wallet-lookup-and-attach"
@@ -98,7 +98,7 @@ async def test_wallet_lookup_round_trip(client, app_session) -> None:
     response = await client.post(
         LOOKUP,
         json={"address": "bc1qsomeaddress", "chain": "bitcoin", "mode": "risk_check"},
-        headers=tenant.headers,
+        headers=idem_headers(tenant),
     )
     assert response.status_code == 200, response.text
     body = response.json()
@@ -139,7 +139,7 @@ async def test_lookup_and_attach_writes_wallet_labels_with_provenance(
             "mode": "risk_check",
             "role_in_case": "exchange_deposit",
         },
-        headers=tenant.headers,
+        headers=idem_headers(tenant),
     )
     assert response.status_code == 200, response.text
     body = response.json()
@@ -175,7 +175,7 @@ async def test_full_investigation_mode_returns_transfers(client) -> None:
     response = await client.post(
         LOOKUP,
         json={"address": "bc1qsuspect", "chain": "bitcoin", "mode": "full_investigation"},
-        headers=tenant.headers,
+        headers=idem_headers(tenant),
     )
     assert response.status_code == 200
     assert len(response.json()["transfers"]) == 2
@@ -189,9 +189,9 @@ async def test_per_connector_daily_limit_enforced(client) -> None:
     await _register_crystal(client, tenant, daily_call_limit=1)
     body = {"address": "bc1qx", "chain": "bitcoin", "mode": "risk_check"}
 
-    first = await client.post(LOOKUP, json=body, headers=tenant.headers)
+    first = await client.post(LOOKUP, json=body, headers=idem_headers(tenant))
     assert first.status_code == 200
-    second = await client.post(LOOKUP, json=body, headers=tenant.headers)
+    second = await client.post(LOOKUP, json=body, headers=idem_headers(tenant))
     assert second.status_code == 429
     assert second.json()["error"]["code"] == "limit_exceeded"
 
@@ -207,10 +207,10 @@ async def test_shared_key_budget_enforced_across_tenants(client, monkeypatch) ->
     await _register_crystal(client, tenant_b)
     body = {"address": "bc1qy", "chain": "bitcoin", "mode": "risk_check"}
 
-    used = (await client.post(LOOKUP, json=body, headers=tenant_a.headers)).status_code
+    used = (await client.post(LOOKUP, json=body, headers=idem_headers(tenant_a))).status_code
     assert used == 200
     monkeypatch.setattr(get_settings(), "shared_key_daily_budget", 1)
-    blocked = await client.post(LOOKUP, json=body, headers=tenant_b.headers)
+    blocked = await client.post(LOOKUP, json=body, headers=idem_headers(tenant_b))
     assert blocked.status_code == 429
     assert "shared key" in blocked.json()["error"]["message"]
 
@@ -303,7 +303,7 @@ async def test_connectors_and_lookups_are_tenant_isolated(client) -> None:
     lookup_b = await client.post(
         LOOKUP,
         json={"address": "bc1qz", "chain": "bitcoin", "mode": "risk_check"},
-        headers=tenant_b.headers,
+        headers=idem_headers(tenant_b),
     )
     assert lookup_b.status_code == 404, "tenant B has no crystal connector registered"
 
@@ -313,6 +313,6 @@ async def test_lookup_without_registered_connector_404(client) -> None:
     response = await client.post(
         LOOKUP,
         json={"address": "bc1q", "chain": "bitcoin", "mode": "risk_check"},
-        headers=tenant.headers,
+        headers=idem_headers(tenant),
     )
     assert response.status_code == 404

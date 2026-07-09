@@ -35,6 +35,11 @@ async def bootstrap_tenant(client: AsyncClient, name: str | None = None) -> Tena
     )
 
 
+def idem_headers(session: TenantSession) -> dict[str, str]:
+    """Auth headers plus a fresh Idempotency-Key (LD-28 routes)."""
+    return {**session.headers, "Idempotency-Key": f"test-{uuid.uuid4().hex}"}
+
+
 async def create_case(client: AsyncClient, session: TenantSession, **overrides) -> dict:
     payload = {
         "title": "Investment scam — victim intake",
