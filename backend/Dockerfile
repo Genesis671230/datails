@@ -16,6 +16,10 @@ COPY --chown=datails:datails app ./app
 COPY --chown=datails:datails alembic ./alembic
 COPY --chown=datails:datails alembic.ini .
 
+# Writable area for the local blob backend (dev containers only; Azure Blob
+# replaces this at deploy).
+RUN mkdir -p /srv/datails/var && chown datails:datails /srv/datails/var
+
 USER datails
 
 EXPOSE 8000

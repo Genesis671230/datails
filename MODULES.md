@@ -51,12 +51,35 @@ connectors, cases, findings, decisions, reports, ledgers, ai, usage).
 
 ## backend/app/integrations
 
-External system clients (azure_foundry, key_vault, blob_storage, crystal,
-generic_api). No business logic here; no AI logic in connectors and vice
-versa.
+External system clients. No business logic here; no AI logic in connectors
+and vice versa. **Genericity rule (Slice 1 acceptance):** vendor knowledge
+stays inside its `integrations/<vendor>/` package; `registry.py` is the only
+module allowed to import vendor code; services see only the generic
+contracts. Enforced by `tests/test_connector_genericity.py`.
 
+- `generic_api/base.py` — generic contracts: ConnectorClient, ConnectorResult,
+  NormalizedLabel/Transfer, plus the mock connector (LD-19).
+- `crystal/client.py` — ALL Crystal knowledge: modes, normalization,
+  replay/live transports (live gated on the LD-6 spike).
 - `crystal/fixtures.py` + `crystal/fixtures/*.json` — recorded-response
   replay fixtures (synthetic and provisional until the LD-6 spike).
+- `registry.py` — connector_type → client; the single vendor touchpoint.
+- `blob_storage/` — BlobStorage interface + filesystem impl (Azure at Slice 3).
+- `key_vault/` — SecretResolver interface + env-var impl (Key Vault at Slice 3).
+- `factories.py` — settings-driven backend selection.
+
+## Slice 1 service/route additions
+
+- `core/idempotency.py` — LD-28 ASGI middleware (replay, 409 on conflict).
+- `core/hashing.py` — canonical JSON + SHA-256 (LD-4 snapshots).
+- `services/cases/`, `services/findings/`, `services/decisions/` — case
+  domain; decision writes emit ledger events same-transaction (LD-9).
+- `services/ledgers/writers.py` — non-committing ledger writers (callers own
+  the transaction).
+- `services/connectors/` — registry service (test call persists nothing,
+  LD-18.2), LD-4 execution pipeline with LD-11/LD-22 limits, vendor-agnostic
+  wallet lookup + attach with LD-14 label provenance.
+- `api/v1/`: cases, findings, decisions, ledger, connectors routes.
 
 ## backend/scripts
 

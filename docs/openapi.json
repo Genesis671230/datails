@@ -89,6 +89,747 @@
           }
         }
       }
+    },
+    "/api/v1/cases": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Create Case",
+        "operationId": "create_case_api_v1_cases_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "List Cases",
+        "operationId": "list_cases_api_v1_cases_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CaseOut"
+                  },
+                  "title": "Response List Cases Api V1 Cases Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{case_id}": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Get Case",
+        "operationId": "get_case_api_v1_cases__case_id__get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Update Case",
+        "operationId": "update_case_api_v1_cases__case_id__put",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{case_id}/wallets": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Attach Wallet",
+        "operationId": "attach_wallet_api_v1_cases__case_id__wallets_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletAttachRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{case_id}/evidence": {
+      "post": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "Add Evidence",
+        "operationId": "add_evidence_api_v1_cases__case_id__evidence_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvidenceCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/findings": {
+      "post": {
+        "tags": [
+          "findings"
+        ],
+        "summary": "Post Finding",
+        "operationId": "post_finding_api_v1_findings_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindingCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindingOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/decisions": {
+      "post": {
+        "tags": [
+          "decisions"
+        ],
+        "summary": "Post Decision",
+        "operationId": "post_decision_api_v1_decisions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ledger/data": {
+      "get": {
+        "tags": [
+          "ledger"
+        ],
+        "summary": "Get Data Ledger",
+        "operationId": "get_data_ledger_api_v1_ledger_data_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "connector_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Connector Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DataLedgerEntryOut"
+                  },
+                  "title": "Response Get Data Ledger Api V1 Ledger Data Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ledger/decision": {
+      "get": {
+        "tags": [
+          "ledger"
+        ],
+        "summary": "Get Decision Ledger",
+        "operationId": "get_decision_ledger_api_v1_ledger_decision_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DecisionLedgerEventOut"
+                  },
+                  "title": "Response Get Decision Ledger Api V1 Ledger Decision Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/connectors": {
+      "get": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "List Connectors",
+        "operationId": "list_connectors_api_v1_connectors_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ConnectorOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Connectors Api V1 Connectors Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "Register Connector",
+        "operationId": "register_connector_api_v1_connectors_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectorCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/connectors/{connector_id}/test": {
+      "post": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "Test Connector",
+        "operationId": "test_connector_api_v1_connectors__connector_id__test_post",
+        "parameters": [
+          {
+            "name": "connector_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Connector Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectorTestResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/connectors/crystal/wallet-lookup": {
+      "post": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "Crystal Wallet Lookup",
+        "operationId": "crystal_wallet_lookup_api_v1_connectors_crystal_wallet_lookup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletLookupRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletLookupResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/connectors/crystal/wallet-lookup-and-attach": {
+      "post": {
+        "tags": [
+          "connectors"
+        ],
+        "summary": "Crystal Wallet Lookup And Attach",
+        "operationId": "crystal_wallet_lookup_and_attach_api_v1_connectors_crystal_wallet_lookup_and_attach_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletLookupAndAttachRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletLookupResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -111,6 +852,1139 @@
         "type": "object",
         "title": "BootstrapRequest"
       },
+      "CaseCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "case_type": {
+            "$ref": "#/components/schemas/CaseType"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/CasePriority",
+            "default": "medium"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "case_type"
+        ],
+        "title": "CaseCreate"
+      },
+      "CaseDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "case_type": {
+            "$ref": "#/components/schemas/CaseType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/CasePriority"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          },
+          "wallets": {
+            "items": {
+              "$ref": "#/components/schemas/WalletOut"
+            },
+            "type": "array",
+            "title": "Wallets"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceOut"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/FindingOut"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionOut"
+            },
+            "type": "array",
+            "title": "Decisions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "case_type",
+          "status",
+          "priority",
+          "summary",
+          "created_at",
+          "updated_at",
+          "wallets",
+          "evidence",
+          "findings",
+          "decisions"
+        ],
+        "title": "CaseDetailOut",
+        "description": "Coherent case state: LD-8 requires findings and decisions explicitly."
+      },
+      "CaseOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "case_type": {
+            "$ref": "#/components/schemas/CaseType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/CasePriority"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "case_type",
+          "status",
+          "priority",
+          "summary",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CaseOut"
+      },
+      "CasePriority": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "urgent"
+        ],
+        "title": "CasePriority"
+      },
+      "CaseStatus": {
+        "type": "string",
+        "enum": [
+          "open",
+          "active",
+          "on_hold",
+          "closed"
+        ],
+        "title": "CaseStatus"
+      },
+      "CaseType": {
+        "type": "string",
+        "enum": [
+          "criminal_investigation",
+          "proof_of_source_of_funds",
+          "digital_inheritance",
+          "divorce",
+          "bankruptcy",
+          "tax_reconstruction"
+        ],
+        "title": "CaseType",
+        "description": "Six verticals, all starting from a transaction or wallet ID (05 \u00a71.3)."
+      },
+      "CaseUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CaseStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CasePriority"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "title": "CaseUpdate"
+      },
+      "CaseWalletRole": {
+        "type": "string",
+        "enum": [
+          "victim",
+          "suspect",
+          "intermediary",
+          "exchange_deposit",
+          "unknown"
+        ],
+        "title": "CaseWalletRole"
+      },
+      "ConnectorCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "connector_type": {
+            "$ref": "#/components/schemas/ConnectorType"
+          },
+          "base_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Url"
+          },
+          "auth_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auth Type"
+          },
+          "secret_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secret Ref"
+          },
+          "daily_call_limit": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Call Limit"
+          },
+          "credential_owner": {
+            "$ref": "#/components/schemas/CredentialOwner",
+            "default": "tenant"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "connector_type"
+        ],
+        "title": "ConnectorCreate"
+      },
+      "ConnectorOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "connector_type": {
+            "$ref": "#/components/schemas/ConnectorType"
+          },
+          "base_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Url"
+          },
+          "auth_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auth Type"
+          },
+          "secret_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secret Ref"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConnectorStatus"
+          },
+          "daily_call_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Call Limit"
+          },
+          "credential_owner": {
+            "$ref": "#/components/schemas/CredentialOwner"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "connector_type",
+          "base_url",
+          "auth_type",
+          "secret_ref",
+          "status",
+          "daily_call_limit",
+          "credential_owner",
+          "created_at"
+        ],
+        "title": "ConnectorOut"
+      },
+      "ConnectorStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "disabled",
+          "error"
+        ],
+        "title": "ConnectorStatus"
+      },
+      "ConnectorTestResult": {
+        "properties": {
+          "connector_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Connector Id"
+          },
+          "secret_resolved": {
+            "type": "boolean",
+            "title": "Secret Resolved"
+          },
+          "transport": {
+            "type": "string",
+            "title": "Transport"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "connector_id",
+          "secret_resolved",
+          "transport",
+          "detail"
+        ],
+        "title": "ConnectorTestResult"
+      },
+      "ConnectorType": {
+        "type": "string",
+        "enum": [
+          "crystal",
+          "blockchain_explorer",
+          "file_upload",
+          "generic_api",
+          "mcp_server"
+        ],
+        "title": "ConnectorType",
+        "description": "Registrable Phase 1 types: crystal, blockchain_explorer, file_upload.\n\ngeneric_api is the base-class/mock type only (LD-19); mcp_server is\nreserved for future BYO connectors, not built in the pilot (LD-22)."
+      },
+      "CredentialOwner": {
+        "type": "string",
+        "enum": [
+          "datails_shared",
+          "tenant"
+        ],
+        "title": "CredentialOwner",
+        "description": "LD-22: pilot Crystal key is Datails-shared; BYO supported from day one."
+      },
+      "DataLedgerEntryOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "case_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Id"
+          },
+          "connector_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Connector Id"
+          },
+          "source_type": {
+            "type": "string",
+            "title": "Source Type"
+          },
+          "source_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Ref"
+          },
+          "payload_hash": {
+            "type": "string",
+            "title": "Payload Hash"
+          },
+          "storage_ref": {
+            "type": "string",
+            "title": "Storage Ref"
+          },
+          "retrieved_by_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved By User Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "case_id",
+          "connector_id",
+          "source_type",
+          "source_ref",
+          "payload_hash",
+          "storage_ref",
+          "retrieved_by_user_id",
+          "created_at"
+        ],
+        "title": "DataLedgerEntryOut"
+      },
+      "DecisionCreate": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "decision_type": {
+            "$ref": "#/components/schemas/DecisionType"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Description"
+          },
+          "rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rationale"
+          },
+          "inputs_ref": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inputs Ref"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "decision_type",
+          "description"
+        ],
+        "title": "DecisionCreate"
+      },
+      "DecisionLedgerEventOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "decision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Id"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/DecisionLedgerEventType"
+          },
+          "actor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Id"
+          },
+          "actor_type": {
+            "type": "string",
+            "title": "Actor Type"
+          },
+          "approved": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "case_id",
+          "decision_id",
+          "event_type",
+          "actor_id",
+          "actor_type",
+          "approved",
+          "created_at"
+        ],
+        "title": "DecisionLedgerEventOut"
+      },
+      "DecisionLedgerEventType": {
+        "type": "string",
+        "enum": [
+          "created",
+          "approved",
+          "rejected",
+          "superseded",
+          "revoked"
+        ],
+        "title": "DecisionLedgerEventType"
+      },
+      "DecisionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "decision_type": {
+            "type": "string",
+            "title": "Decision Type"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rationale"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "made_by": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Made By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "case_id",
+          "decision_type",
+          "description",
+          "rationale",
+          "outcome",
+          "made_by",
+          "created_at"
+        ],
+        "title": "DecisionOut"
+      },
+      "DecisionType": {
+        "type": "string",
+        "enum": [
+          "open_case",
+          "freeze_request_sent",
+          "report_filed",
+          "sar_filed",
+          "case_closed",
+          "escalation",
+          "other"
+        ],
+        "title": "DecisionType"
+      },
+      "EvidenceCreate": {
+        "properties": {
+          "evidence_type": {
+            "$ref": "#/components/schemas/EvidenceType"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "storage_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Storage Ref"
+          },
+          "source_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Ref"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "evidence_type",
+          "title"
+        ],
+        "title": "EvidenceCreate"
+      },
+      "EvidenceOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "evidence_type": {
+            "$ref": "#/components/schemas/EvidenceType"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "storage_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Storage Ref"
+          },
+          "source_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Ref"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "evidence_type",
+          "title",
+          "storage_ref",
+          "source_ref",
+          "created_at"
+        ],
+        "title": "EvidenceOut"
+      },
+      "EvidenceType": {
+        "type": "string",
+        "enum": [
+          "transaction_history_export",
+          "screenshot",
+          "communication_record",
+          "exchange_correspondence",
+          "police_file_reference",
+          "on_chain_snapshot",
+          "other"
+        ],
+        "title": "EvidenceType"
+      },
+      "FindingCreate": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "finding_type": {
+            "$ref": "#/components/schemas/FindingType"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "source_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Ref"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "finding_type",
+          "title"
+        ],
+        "title": "FindingCreate"
+      },
+      "FindingOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "finding_type": {
+            "$ref": "#/components/schemas/FindingType"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "source_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Ref"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "is_ai_generated": {
+            "type": "boolean",
+            "title": "Is Ai Generated"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "case_id",
+          "finding_type",
+          "title",
+          "content",
+          "source_ref",
+          "confidence",
+          "is_ai_generated",
+          "approved_by",
+          "approved_at",
+          "created_at"
+        ],
+        "title": "FindingOut"
+      },
+      "FindingType": {
+        "type": "string",
+        "enum": [
+          "wallet_attribution",
+          "transaction_trace",
+          "entity_identification",
+          "evidence_summary",
+          "risk_assessment",
+          "other"
+        ],
+        "title": "FindingType"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -123,6 +1997,56 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LabelOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "label_type": {
+            "$ref": "#/components/schemas/WalletLabelType"
+          },
+          "risk_color": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskColor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "label_type",
+          "risk_color",
+          "confidence"
+        ],
+        "title": "LabelOut"
+      },
+      "RiskColor": {
+        "type": "string",
+        "enum": [
+          "green",
+          "yellow",
+          "red"
+        ],
+        "title": "RiskColor",
+        "description": "Regulated / unregulated / sanctioned convention (05 \u00a71.2)."
       },
       "TenantOut": {
         "properties": {
@@ -162,6 +2086,51 @@
           "learning_capture_enabled"
         ],
         "title": "TenantOut"
+      },
+      "TransferOut": {
+        "properties": {
+          "tx_hash": {
+            "type": "string",
+            "title": "Tx Hash"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction"
+          },
+          "counterparty_address": {
+            "type": "string",
+            "title": "Counterparty Address"
+          },
+          "asset": {
+            "type": "string",
+            "title": "Asset"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tx_hash",
+          "direction",
+          "counterparty_address",
+          "asset",
+          "amount",
+          "timestamp"
+        ],
+        "title": "TransferOut"
       },
       "UserOut": {
         "properties": {
@@ -241,6 +2210,314 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WalletAttachRequest": {
+        "properties": {
+          "address": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Address"
+          },
+          "chain": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Chain"
+          },
+          "wallet_kind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WalletKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "role_in_case": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CaseWalletRole"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "address",
+          "chain"
+        ],
+        "title": "WalletAttachRequest"
+      },
+      "WalletKind": {
+        "type": "string",
+        "enum": [
+          "hot_wallet",
+          "self_hosted",
+          "cold_storage",
+          "smart_contract",
+          "unknown"
+        ],
+        "title": "WalletKind"
+      },
+      "WalletLabelType": {
+        "type": "string",
+        "enum": [
+          "entity",
+          "risk_flag",
+          "scam_reference",
+          "user_note"
+        ],
+        "title": "WalletLabelType"
+      },
+      "WalletLookupAndAttachRequest": {
+        "properties": {
+          "address": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Address"
+          },
+          "chain": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Chain"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "risk_check",
+              "full_investigation"
+            ],
+            "title": "Mode",
+            "default": "risk_check"
+          },
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "role_in_case": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role In Case"
+          }
+        },
+        "type": "object",
+        "required": [
+          "address",
+          "chain",
+          "case_id"
+        ],
+        "title": "WalletLookupAndAttachRequest"
+      },
+      "WalletLookupRequest": {
+        "properties": {
+          "address": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Address"
+          },
+          "chain": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Chain"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "risk_check",
+              "full_investigation"
+            ],
+            "title": "Mode",
+            "default": "risk_check"
+          }
+        },
+        "type": "object",
+        "required": [
+          "address",
+          "chain"
+        ],
+        "title": "WalletLookupRequest"
+      },
+      "WalletLookupResponse": {
+        "properties": {
+          "connector_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Connector Run Id"
+          },
+          "data_ledger_id": {
+            "type": "integer",
+            "title": "Data Ledger Id"
+          },
+          "payload_hash": {
+            "type": "string",
+            "title": "Payload Hash"
+          },
+          "storage_ref": {
+            "type": "string",
+            "title": "Storage Ref"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "chain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chain"
+          },
+          "risk_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Score"
+          },
+          "risk_color": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskColor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "labels": {
+            "items": {
+              "$ref": "#/components/schemas/LabelOut"
+            },
+            "type": "array",
+            "title": "Labels"
+          },
+          "transfers": {
+            "items": {
+              "$ref": "#/components/schemas/TransferOut"
+            },
+            "type": "array",
+            "title": "Transfers"
+          },
+          "wallet_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wallet Id"
+          },
+          "case_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "connector_run_id",
+          "data_ledger_id",
+          "payload_hash",
+          "storage_ref",
+          "address",
+          "chain",
+          "risk_score",
+          "risk_color",
+          "labels",
+          "transfers"
+        ],
+        "title": "WalletLookupResponse"
+      },
+      "WalletOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "chain": {
+            "type": "string",
+            "title": "Chain"
+          },
+          "wallet_kind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WalletKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_watched": {
+            "type": "boolean",
+            "title": "Is Watched"
+          },
+          "role_in_case": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CaseWalletRole"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "address",
+          "chain",
+          "wallet_kind",
+          "is_watched"
+        ],
+        "title": "WalletOut"
       },
       "WorkspaceContextResponse": {
         "properties": {
