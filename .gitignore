@@ -8,3 +8,6 @@ __pycache__/
 # macOS AppleDouble + tooling
 .pytest_cache/
 .ruff_cache/
+
+# local blob snapshots
+var/

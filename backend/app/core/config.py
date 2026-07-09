@@ -45,6 +45,22 @@ class Settings(BaseSettings):
     dev_user_oid: str = "00000000-0000-0000-0000-000000000001"
     dev_user_email: str = "dev@localhost"
 
+    # Storage and secret backends. Local implementations for dev/CI; Azure
+    # implementations behind the same interfaces at the Slice 3 deploy.
+    blob_backend: Literal["local", "azure"] = "local"
+    blob_local_path: str = "./var/blobs"
+    secrets_backend: Literal["local_env", "azure_key_vault"] = "local_env"
+
+    # Crystal connector (LD-22). Transport "replay" serves recorded fixtures
+    # (dev/CI); "live" calls the real API using the shared temporary key
+    # resolved via secret_ref. Base URL and endpoint shapes are confirmed in
+    # the LD-6 spike.
+    crystal_transport: Literal["replay", "live"] = "replay"
+    crystal_base_url: str = ""
+    crystal_shared_secret_ref: str = "CRYSTAL_API_KEY"
+    # Global daily budget for the shared pilot key, across all tenants (LD-22).
+    crystal_shared_daily_budget: int = 500
+
     @model_validator(mode="after")
     def _forbid_dev_mode_outside_local(self) -> "Settings":
         if self.auth_dev_mode and self.environment != ENVIRONMENT_LOCAL:
