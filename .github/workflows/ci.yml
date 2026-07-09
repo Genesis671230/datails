@@ -1,0 +1,64 @@
+# CI: lint + tests against a real Postgres, publish the OpenAPI contract
+# artifact (LD-26). Green CI is part of every slice gate (LD-10).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: datails_owner
+          POSTGRES_PASSWORD: datails_owner_local
+          POSTGRES_DB: datails
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U datails_owner -d datails"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Provision restricted application role (LD-3)
+        run: psql -h localhost -U datails_owner -d datails -f db-init/01-app-role.sql
+        env:
+          PGPASSWORD: datails_owner_local
+
+      - name: Lint
+        run: ruff check app alembic
+
+      - name: Tests
+        run: pytest app/tests -q
+        env:
+          TEST_DB_HOST: localhost
+
+      - name: Export OpenAPI contract (LD-26)
+        run: python scripts/export_openapi.py
+
+      - name: Publish OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-spec
+          path: docs/openapi.json

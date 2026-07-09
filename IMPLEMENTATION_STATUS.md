@@ -4,39 +4,47 @@ Last updated: 9 July 2026
 
 ## Completed slices
 
-- (none yet)
+- **Slice 0 — Foundation** (9 Jul 2026): scaffold, full core schema (28
+  tables, one migration, LD-3 insert-only enforcement), Entra JWT middleware
+  (LD-1) + bootstrap/me, AQ methodology seed + placeholder AQ case fixture +
+  synthetic Crystal fixtures, OpenAPI contract, Bicep skeleton, CI workflow.
+  30 tests green. Details: `docs/build-log/2026-07-09-slice-0.md`.
 
 ## Current slice
 
-**Slice 0 — Foundation** (in progress)
+**Slice 1 — Case + Crystal ingestion** (next up)
 
-- [x] Repo scaffold: FastAPI app, config, structured logging, error
-      middleware, `/api/v1/health`, Dockerfile, docker-compose with Postgres
-- [ ] DB foundation: SQLAlchemy async base/session, Alembic
-- [ ] Full core schema in one migration + LD-3 insert-only enforcement
-- [ ] Entra JWT middleware (LD-1) + `POST /api/v1/workspaces/bootstrap` +
-      `GET /api/v1/workspaces/me`
-- [ ] Methodology seed (AQ baseline) + AQ case fixture (placeholder) +
-      recorded Crystal fixtures (synthetic, pending LD-6 spike)
-- [ ] OpenAPI export, Bicep skeleton (region param, PITR, Blob soft-delete),
-      CI workflow
+First live moment: wallet in → enriched case.
+
+- [ ] Case domain routes (03 Phase 5 list); `GET /api/v1/cases/{id}` returns
+      findings + decisions (LD-8)
+- [ ] Decision writes emit ledger events same-transaction (LD-9)
+- [ ] Connector interface + Crystal connector (risk_check /
+      full_investigation modes, LD-22); Key Vault secret resolution;
+      LD-4 ingestion sequence; wallet-lookup + attach routes; label writes
+      with provenance (LD-14)
+- [ ] Shared-key global budget + per-connector daily limit (LD-11/22)
+- [ ] Idempotency middleware on expensive POSTs (LD-28)
 
 ## Open blockers
 
-- None for Slice 0. Azure/Entra/Crystal prerequisites are provided later by
-  the founder; Slices 0–2 build and test locally against Docker.
+- None. Local mocks cover Blob Storage and Key Vault until Azure resources
+  exist; CI runs on recorded (currently synthetic) Crystal fixtures.
 
 ## Awaiting from founder (asked when a slice needs them)
 
-- Azure resource group (West Europe) — needed at Slice 3 deploy
-- Foundry GPT-4o / GPT-4o-mini deployments verified — needed before Slice 2
-- Entra External ID app registration — needed for deployed auth + frontend
-  contract; local tests use test-signed JWTs against the real validation path
-- Crystal temporary API key — needed at Slice 1 for the live round-trip
-- Anonymised AQ case dataset — placeholder fixture used until it arrives
+- **Slice 1:** Crystal temporary API key → Key Vault (LD-22) — required only
+  for the live-call acceptance check
+- **Before Slice 2:** GPT-4o + GPT-4o-mini West Europe deployments verified,
+  incl. quota (LD-23/24)
+- **Slice 3:** Azure resource group (West Europe), Entra External ID app
+  registration, GitHub repository + Actions OIDC federation
+- **Anytime:** anonymised AQ case dataset (replaces placeholder fixture);
+  cohort Data & Methodology Permission status per member (gates
+  `learning_capture_enabled`, LD-30)
 
 ## Next milestone
 
-Slice 0 acceptance: app boots; migration up/down clean; ledger tables reject
-UPDATE/DELETE; valid Entra JWT → tenant context, missing/invalid → 401;
-tenant-isolation test passes; fixtures load; CI green.
+Slice 1 acceptance: real Crystal call round-trips (snapshot → hash →
+data_ledger → labels with provenance, visible via `GET /api/v1/ledger/data`);
+idempotency replay returns the original response; CI green on fixtures.
