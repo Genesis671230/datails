@@ -5,6 +5,7 @@ tables, grants, and triggers; the application role stays restricted (LD-3).
 """
 
 import asyncio
+import os
 from logging.config import fileConfig
 
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -22,7 +23,8 @@ target_metadata = Base.metadata
 
 
 def _migration_url() -> str:
-    return get_settings().database_migration_url
+    # Environment first (tests point this at scratch databases), settings after.
+    return os.environ.get("DATABASE_MIGRATION_URL") or get_settings().database_migration_url
 
 
 def run_migrations_offline() -> None:
