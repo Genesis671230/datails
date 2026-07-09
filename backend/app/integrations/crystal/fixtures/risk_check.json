@@ -1,0 +1,17 @@
+{
+  "_provisional": true,
+  "_note": "SYNTHETIC fixture. Crystal payload shapes are unknown until the LD-6 API spike; this shape is a Datails-side working assumption for the mock/replay mode and MUST be replaced by recorded responses during the spike. It makes no claim about Crystal's actual API.",
+  "mode": "risk_check",
+  "address": "bc1q0placeholder0exchange00000000000000000",
+  "chain": "bitcoin",
+  "risk_score": 0.12,
+  "risk_color": "green",
+  "entities": [
+    {
+      "name": "Binance",
+      "category": "exchange",
+      "confidence": 0.97
+    }
+  ],
+  "retrieved_at": "2026-07-09T00:00:00Z"
+}

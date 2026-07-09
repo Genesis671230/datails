@@ -26,6 +26,7 @@ from app.db.repositories.tenancy import (
     slug_exists,
 )
 from app.db.repositories.users import get_user_by_oid
+from app.services.methodologies.baseline_seed import seed_baseline_methodology
 
 logger = get_logger(__name__)
 
@@ -81,8 +82,12 @@ async def bootstrap_workspace(
 
     workspace = Workspace(tenant_id=tenant.id, name=DEFAULT_WORKSPACE_NAME, is_default=True)
     session.add(workspace)
+    await session.flush()
     onboarding = OnboardingSession(tenant_id=tenant.id, user_id=user.id)
     session.add(onboarding)
+    # Every new tenant starts with the AQ baseline methodology (05 §2) — the
+    # workspace must not feel like an empty engine.
+    await seed_baseline_methodology(session, tenant.id, workspace.id)
     await session.commit()
 
     logger.info(

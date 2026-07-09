@@ -1,34 +1,33 @@
-"""Slice 0 scaffold tests: health route, error envelope, config guard."""
+"""Slice 0 scaffold tests: health route, request correlation, config guard.
+
+All HTTP tests use the shared async client (one event loop for app, engine,
+and tests) — a sync TestClient would run the app in a separate loop and
+poison the shared connection pool.
+"""
 
 import pytest
-from fastapi.testclient import TestClient
 
 from app.core.config import Settings
-from app.main import create_app
 
 
-@pytest.fixture
-def client() -> TestClient:
-    return TestClient(create_app())
-
-
-def test_health_returns_ok(client: TestClient) -> None:
-    response = client.get("/api/v1/health")
+async def test_health_returns_ok(client) -> None:
+    response = await client.get("/api/v1/health")
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok"
     assert body["app"] == "datails-backend"
+    assert body["database"] == "ok"
 
 
-def test_health_response_carries_request_id_header(client: TestClient) -> None:
-    response = client.get("/api/v1/health")
+async def test_health_response_carries_request_id_header(client) -> None:
+    response = await client.get("/api/v1/health")
     assert response.headers.get("X-Request-ID")
 
 
-def test_unknown_route_requires_auth_first(client: TestClient) -> None:
+async def test_unknown_route_requires_auth_first(client) -> None:
     # Auth middleware runs before routing: everything except /api/v1/health
     # needs a token (LD-1), even unknown paths.
-    response = client.get("/api/v1/does-not-exist")
+    response = await client.get("/api/v1/does-not-exist")
     assert response.status_code == 401
 
 

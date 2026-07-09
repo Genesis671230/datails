@@ -1,0 +1,59 @@
+{
+  "_placeholder": true,
+  "_note": "PLACEHOLDER dataset. The real anonymised AQ Forensics case (wallets, tx hashes, expected hops) is a day-one prerequisite in 07_BUILD_PLAN and will replace this file verbatim when provided. Addresses and hashes below are synthetic and resolve to nothing on-chain.",
+  "case": {
+    "title": "PLACEHOLDER — Anonymised investment-scam case (AQ)",
+    "case_type": "criminal_investigation",
+    "priority": "high",
+    "summary": "Victim transferred BTC to a fraudulent investment platform. Funds moved through an intermediary wallet to an exchange deposit address. Placeholder narrative pending the real anonymised dataset.",
+    "metadata": {
+      "scam_typology": "investment_scam",
+      "placeholder": true
+    }
+  },
+  "wallets": [
+    {
+      "ref": "victim",
+      "address": "bc1q0placeholder0victim0000000000000000000",
+      "chain": "bitcoin",
+      "wallet_kind": "self_hosted",
+      "role_in_case": "victim"
+    },
+    {
+      "ref": "intermediary",
+      "address": "bc1q0placeholder0suspect000000000000000000",
+      "chain": "bitcoin",
+      "wallet_kind": "unknown",
+      "role_in_case": "suspect"
+    },
+    {
+      "ref": "exchange_deposit",
+      "address": "bc1q0placeholder0exchange00000000000000000",
+      "chain": "bitcoin",
+      "wallet_kind": "hot_wallet",
+      "role_in_case": "exchange_deposit"
+    }
+  ],
+  "expected_hops": [
+    {
+      "hop_index": 0,
+      "from": "victim",
+      "to": "intermediary",
+      "tx_hash": "placeholder-tx-0000000000000000000000000000000000000000000000000001",
+      "asset": "BTC",
+      "chain": "bitcoin",
+      "amount": "0.45",
+      "boundary_flag": null
+    },
+    {
+      "hop_index": 1,
+      "from": "intermediary",
+      "to": "exchange_deposit",
+      "tx_hash": "placeholder-tx-0000000000000000000000000000000000000000000000000002",
+      "asset": "BTC",
+      "chain": "bitcoin",
+      "amount": "0.44",
+      "boundary_flag": "hot_wallet"
+    }
+  ]
+}
