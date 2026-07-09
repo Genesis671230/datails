@@ -9,7 +9,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.v1 import health
+from app.api.v1 import health, workspaces
+from app.core.auth import EntraJwtMiddleware
 from app.core.config import get_settings
 from app.core.errors import register_error_handlers
 from app.core.logging import configure_logging, get_logger, log_fields
@@ -48,10 +49,14 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    # Middleware order (outermost first at request time): request context
+    # assigns request_id before auth runs, so 401s are correlated too.
+    app.add_middleware(EntraJwtMiddleware)
     app.add_middleware(RequestContextMiddleware)
     register_error_handlers(app)
 
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
+    app.include_router(workspaces.router, prefix="/api/v1", tags=["workspaces"])
     return app
 
 

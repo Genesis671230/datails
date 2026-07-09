@@ -25,9 +25,11 @@ def test_health_response_carries_request_id_header(client: TestClient) -> None:
     assert response.headers.get("X-Request-ID")
 
 
-def test_unknown_route_returns_404(client: TestClient) -> None:
+def test_unknown_route_requires_auth_first(client: TestClient) -> None:
+    # Auth middleware runs before routing: everything except /api/v1/health
+    # needs a token (LD-1), even unknown paths.
     response = client.get("/api/v1/does-not-exist")
-    assert response.status_code == 404
+    assert response.status_code == 401
 
 
 def test_auth_dev_mode_rejected_outside_local() -> None:
