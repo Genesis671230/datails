@@ -13,6 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # --chown: the source volume carries restrictive owner-only permissions;
 # the runtime user must be able to read the copied tree.
 COPY --chown=datails:datails app ./app
+COPY --chown=datails:datails alembic ./alembic
+COPY --chown=datails:datails alembic.ini .
 
 USER datails
 
