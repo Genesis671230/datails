@@ -1,0 +1,40 @@
+# Local development stack (Slice 0).
+# Postgres runs with two roles: datails_owner (migrations) and datails_app
+# (runtime, restricted). The app role is provisioned by the init script so the
+# LD-3 insert-only grants on the ledger tables bind to a real runtime role.
+# Credentials below are local-only defaults, never used in any deployed
+# environment (Azure uses Key Vault + managed identity).
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: datails_owner
+      POSTGRES_PASSWORD: datails_owner_local
+      POSTGRES_DB: datails
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backend/db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U datails_owner -d datails"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      ENVIRONMENT: local
+      DATABASE_URL: postgresql+asyncpg://datails_app:datails_app_local@db:5432/datails
+      DATABASE_MIGRATION_URL: postgresql+asyncpg://datails_owner:datails_owner_local@db:5432/datails
+      AUTH_DEV_MODE: "true"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

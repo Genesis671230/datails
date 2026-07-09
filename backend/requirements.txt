@@ -1,0 +1,14 @@
+# Runtime dependencies — Slice 0.
+# Azure SDK packages (Key Vault, Blob, Foundry) are added in the slice that
+# first uses them (LD-26 build order; YAGNI until then).
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.1
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+PyJWT[crypto]==2.10.1
+# Pinned: newer cryptography releases ship no macOS x86_64 wheel (local dev).
+cryptography==44.0.0
+httpx==0.28.1

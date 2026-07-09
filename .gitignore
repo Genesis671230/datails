@@ -4,3 +4,7 @@
 __pycache__/
 *.pyc
 .venv/
+
+# macOS AppleDouble + tooling
+.pytest_cache/
+.ruff_cache/

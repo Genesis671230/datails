@@ -1,0 +1,9 @@
+# macOS resource-fork files (this repo lives on a non-APFS volume)
+._*
+.DS_Store
+# local tooling
+.venv
+.pytest_cache
+__pycache__
+*.pyc
+.ruff_cache
