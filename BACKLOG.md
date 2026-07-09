@@ -14,8 +14,8 @@ Deferred items, each with a reason, appended at the moment of deferral
 | Usage metering behavior (record writes + `GET /api/v1/usage/summary`) | Tables exist from Slice 0; metering behavior deferred per 07 |
 | Methodology CRUD routes | Seed data only in pilot (07 deferrals) |
 | UAE North stamp | Pilot is one West Europe stamp (LD-23); same templates redeploy later |
-| MCP connectors | `mcp_server` reserved in `connector_type`, not built (LD-22) |
-| BYO connector keys UX | Schema supports `credential_owner=tenant` from day one (LD-22); UX later |
+| MCP connectors | `mcp_server` reserved in `connector_type`, not built (LD-22). **Promoted to the post-pilot "Connector Platform (BYO API + MCP)" milestone** (IMPLEMENTATION_STATUS.md) |
+| BYO connector keys UX | Schema supports `credential_owner=tenant` from day one (LD-22); UX later. **Promoted to the post-pilot "Connector Platform (BYO API + MCP)" milestone** (IMPLEMENTATION_STATUS.md) |
 | Redis cache | LD-5 context cache is in-process for the pilot (LD-21) |
 | Multi-chain beyond BTC | Pilot loop is Bitcoin first (07 acceptance) |
 | Workflow-template library | Post-pilot (07 deferrals) |

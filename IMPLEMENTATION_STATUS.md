@@ -48,3 +48,29 @@ First live moment: wallet in → enriched case.
 Slice 1 acceptance: real Crystal call round-trips (snapshot → hash →
 data_ledger → labels with provenance, visible via `GET /api/v1/ledger/data`);
 idempotency replay returns the original response; CI green on fixtures.
+
+**Slice 1 additional acceptance criterion (founder, 9 Jul 2026) — CONNECTOR
+GENERICITY:** no module outside `integrations/crystal/` may import anything
+Crystal-specific; all Crystal knowledge (endpoints, payload shapes,
+normalization) stays in `integrations/crystal/`; adding a second connector
+must require only a new `integrations/<name>/` module plus a registry entry,
+with zero changes to services or schema. Enforced by an automated test.
+
+## Post-pilot milestone: Connector Platform (BYO API + MCP)
+
+**Do NOT build in Slices 1–3.**
+
+Goal: investigators connect their own tools like any modern platform —
+per-tenant API keys and MCP server connections behind the same connector
+interface, ingestion pipeline (snapshot → hash → Data Ledger), and
+provenance rules Crystal uses.
+
+Scope:
+- BYO API keys UX (`credential_owner=tenant`)
+- Blockchain-explorer connector as connector #2
+- `mcp_server` connector type implementation
+- Connector registry/catalog surface
+
+Sourced from BACKLOG items "MCP connectors" and "BYO connector keys UX"
+(marked as promoted there). The Slice 1 connector-genericity criterion above
+is the architectural down-payment on this milestone.
