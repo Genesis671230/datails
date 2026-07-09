@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.v1 import health, workspaces
+from app.api.v1 import cases, findings, health, workspaces
 from app.core.auth import EntraJwtMiddleware
 from app.core.config import get_settings
 from app.core.errors import register_error_handlers
@@ -57,6 +57,8 @@ def create_app() -> FastAPI:
 
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
     app.include_router(workspaces.router, prefix="/api/v1", tags=["workspaces"])
+    app.include_router(cases.router, prefix="/api/v1", tags=["cases"])
+    app.include_router(findings.router, prefix="/api/v1", tags=["findings"])
     return app
 
 
