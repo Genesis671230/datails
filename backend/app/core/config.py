@@ -51,6 +51,13 @@ class Settings(BaseSettings):
     blob_local_path: str = "./var/blobs"
     secrets_backend: Literal["local_env", "azure_key_vault"] = "local_env"
 
+    # AI model backend. "mock" is deterministic for dev/CI; "azure_foundry"
+    # arrives once GPT-4o/4o-mini West Europe deployments are verified
+    # (LD-23/24). The mock is refused outside local environments.
+    ai_backend: Literal["mock", "azure_foundry"] = "mock"
+    foundry_endpoint: str = ""
+    foundry_api_version: str = ""
+
     # Crystal connector (LD-22). Transport "replay" serves recorded fixtures
     # (dev/CI); "live" calls the real API using the shared temporary key
     # resolved via secret_ref. Base URL and endpoint shapes are confirmed in
@@ -68,6 +75,11 @@ class Settings(BaseSettings):
             raise ValueError(
                 "AUTH_DEV_MODE=true is only permitted when ENVIRONMENT=local "
                 "(LD-1). Refusing to start."
+            )
+        if self.ai_backend == "mock" and self.environment not in (ENVIRONMENT_LOCAL, "dev"):
+            raise ValueError(
+                "AI_BACKEND=mock is only permitted in local/dev environments; "
+                "production uses Azure-hosted models only (LD-24)."
             )
         return self
 

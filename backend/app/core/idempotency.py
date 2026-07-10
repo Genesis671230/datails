@@ -29,6 +29,7 @@ PROTECTED_ROUTES: frozenset[tuple[str, str]] = frozenset(
     {
         ("POST", "/api/v1/connectors/crystal/wallet-lookup"),
         ("POST", "/api/v1/connectors/crystal/wallet-lookup-and-attach"),
+        ("POST", "/api/v1/ai/assistant"),
     }
 )
 

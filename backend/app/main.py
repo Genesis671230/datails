@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.v1 import cases, connectors, decisions, findings, health, ledger, workspaces
+from app.api.v1 import ai, cases, connectors, decisions, findings, health, ledger, workspaces
 from app.core.auth import EntraJwtMiddleware
 from app.core.config import get_settings
 from app.core.errors import register_error_handlers
@@ -66,6 +66,7 @@ def create_app() -> FastAPI:
     app.include_router(decisions.router, prefix="/api/v1", tags=["decisions"])
     app.include_router(ledger.router, prefix="/api/v1", tags=["ledger"])
     app.include_router(connectors.router, prefix="/api/v1", tags=["connectors"])
+    app.include_router(ai.router, prefix="/api/v1", tags=["ai"])
     return app
 
 
