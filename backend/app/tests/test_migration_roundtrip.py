@@ -60,8 +60,8 @@ async def test_migration_up_down_up_leaves_no_residue(scratch_db) -> None:
 
     await asyncio.to_thread(command.upgrade, config, "head")
     tables_up, enums_up = await _counts(scratch_db)
-    assert tables_up == 28, "expected the full Slice-0 core schema"
-    assert enums_up == 25
+    assert tables_up == 30, "Slice-0 core schema (28) + reports + report_versions"
+    assert enums_up == 27
 
     await asyncio.to_thread(command.downgrade, config, "base")
     tables_down, enums_down = await _counts(scratch_db)

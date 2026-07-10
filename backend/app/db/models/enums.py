@@ -215,6 +215,24 @@ class LearningEventType(str, Enum):
     SESSION_DURATION = "session_duration"
 
 
+class ReportType(str, Enum):
+    """05 §1.4: freeze_blocklist_request and sar_draft are first-class (LD-17)."""
+
+    POLICE_INTAKE = "police_intake"
+    EXCHANGE_COMPLIANCE_REQUEST = "exchange_compliance_request"
+    FREEZE_BLOCKLIST_REQUEST = "freeze_blocklist_request"
+    INVESTIGATOR_SUMMARY = "investigator_summary"
+    CASE_DOSSIER = "case_dossier"
+    SAR_DRAFT = "sar_draft"
+
+
+class ReportStatus(str, Enum):
+    DRAFT = "draft"
+    IN_REVIEW = "in_review"
+    APPROVED = "approved"
+    FINAL = "final"
+
+
 class UsageCategory(str, Enum):
     AI_TASK = "ai_task"
     CONNECTOR_RUN = "connector_run"

@@ -20,6 +20,7 @@ from app.db.models.methodology import (
     MethodologyStep,
     WorkflowAgentProfile,
 )
+from app.db.models.reports import Report, ReportVersion
 from app.db.models.tenancy import OnboardingSession, Tenant, User, Workspace
 from app.db.models.traces import Trace, TraceHop
 from app.db.models.usage import IdempotencyKey, TenantPlanState, UsageRecord
@@ -43,6 +44,8 @@ __all__ = [
     "Methodology",
     "MethodologyStep",
     "OnboardingSession",
+    "Report",
+    "ReportVersion",
     "Tenant",
     "TenantPlanState",
     "Trace",
