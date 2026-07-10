@@ -71,6 +71,66 @@ async def test_capture_with_consent(client, app_session, owner_session) -> None:
     assert "content" not in (event.payload_json or {}), "no raw case content in payloads"
 
 
+async def test_ingest_route_captures_with_consent(client, app_session, owner_session) -> None:
+    tenant = await bootstrap_tenant(client)
+    await _enable_capture(owner_session, tenant.tenant_id)
+    case = await create_case(client, tenant)
+
+    response = await client.post(
+        "/api/v1/learning-events",
+        json={"event_type": "recommendation_rejected", "subject_type": "assistant_answer",
+              "subject_id": "some-answer-id", "case_id": case["id"],
+              "payload": {"reason_category": "wrong_direction"}},
+        headers=tenant.headers,
+    )
+    assert response.status_code == 201, response.text
+    body = response.json()
+    assert body["captured"] is True
+    events = await _events_for(app_session, tenant.tenant_id)
+    assert any(e.event_type.value == "recommendation_rejected" for e in events)
+
+
+async def test_ingest_route_noop_without_consent(client, app_session) -> None:
+    tenant = await bootstrap_tenant(client)
+    response = await client.post(
+        "/api/v1/learning-events",
+        json={"event_type": "report_edited", "subject_type": "report", "subject_id": "x"},
+        headers=tenant.headers,
+    )
+    assert response.status_code == 201
+    assert response.json() == {"captured": False, "event_id": None}
+    assert await _events_for(app_session, tenant.tenant_id) == []
+
+
+async def test_ingest_route_rejects_unknown_event_type(client) -> None:
+    tenant = await bootstrap_tenant(client)
+    response = await client.post(
+        "/api/v1/learning-events",
+        json={"event_type": "telepathy", "subject_type": "report", "subject_id": "x"},
+        headers=tenant.headers,
+    )
+    assert response.status_code == 422, "05 §9 vocabulary is the contract"
+
+
+async def test_ingest_route_rejects_foreign_case(client, owner_session) -> None:
+    tenant_a = await bootstrap_tenant(client)
+    tenant_b = await bootstrap_tenant(client)
+    await _enable_capture(owner_session, tenant_b.tenant_id)
+    case_a = await create_case(client, tenant_a)
+    response = await client.post(
+        "/api/v1/learning-events",
+        json={"event_type": "report_edited", "subject_type": "report",
+              "subject_id": "x", "case_id": case_a["id"]},
+        headers=tenant_b.headers,
+    )
+    assert response.status_code == 404
+
+
+async def test_learning_events_route_in_openapi(app) -> None:
+    paths = app.openapi()["paths"]
+    assert "/api/v1/learning-events" in paths, "frontend contract per LD-26"
+
+
 async def test_learning_events_are_insert_only(client, app_session, owner_session) -> None:
     """learning_events sits under the same LD-3 enforcement as the ledgers."""
     import pytest

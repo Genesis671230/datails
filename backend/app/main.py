@@ -16,6 +16,7 @@ from app.api.v1 import (
     decisions,
     findings,
     health,
+    learning_events,
     ledger,
     reports,
     workspaces,
@@ -78,6 +79,7 @@ def create_app() -> FastAPI:
     app.include_router(connectors.router, prefix="/api/v1", tags=["connectors"])
     app.include_router(ai.router, prefix="/api/v1", tags=["ai"])
     app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
+    app.include_router(learning_events.router, prefix="/api/v1", tags=["learning"])
     return app
 
 

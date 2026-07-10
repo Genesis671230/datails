@@ -1045,6 +1045,47 @@
           }
         }
       }
+    },
+    "/api/v1/learning-events": {
+      "post": {
+        "tags": [
+          "learning"
+        ],
+        "summary": "Ingest Learning Event",
+        "operationId": "ingest_learning_event_api_v1_learning_events_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LearningEventIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LearningEventResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2320,6 +2361,98 @@
           "confidence"
         ],
         "title": "LabelOut"
+      },
+      "LearningEventIn": {
+        "properties": {
+          "event_type": {
+            "$ref": "#/components/schemas/LearningEventType"
+          },
+          "subject_type": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Subject Type"
+          },
+          "subject_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Subject Id"
+          },
+          "case_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Id"
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_type",
+          "subject_type",
+          "subject_id"
+        ],
+        "title": "LearningEventIn"
+      },
+      "LearningEventResult": {
+        "properties": {
+          "captured": {
+            "type": "boolean",
+            "title": "Captured"
+          },
+          "event_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "captured"
+        ],
+        "title": "LearningEventResult"
+      },
+      "LearningEventType": {
+        "type": "string",
+        "enum": [
+          "recommendation_accepted",
+          "recommendation_rejected",
+          "report_edited",
+          "draft_approved",
+          "draft_rejected",
+          "override",
+          "workflow_completed",
+          "workflow_abandoned",
+          "connector_used",
+          "trace_hop_confirmed",
+          "trace_hop_rejected",
+          "session_duration"
+        ],
+        "title": "LearningEventType",
+        "description": "Learning Layer capture vocabulary (05 \u00a79, LD-30)."
       },
       "ReportDraftRequest": {
         "properties": {
