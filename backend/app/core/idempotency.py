@@ -15,6 +15,7 @@ stay retryable under the same key (rationale in DECISIONS.md).
 """
 
 import json
+import re
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -34,6 +35,21 @@ PROTECTED_ROUTES: frozenset[tuple[str, str]] = frozenset(
     }
 )
 
+# Parameterized routes (05 §11: trace creation is idempotency-protected).
+_UUID = r"[0-9a-fA-F-]{36}"
+PROTECTED_PATTERNS: tuple[tuple[str, re.Pattern], ...] = (
+    ("POST", re.compile(rf"^/api/v1/cases/{_UUID}/traces$")),
+)
+
+
+def _is_protected(method: str, path: str) -> bool:
+    if (method, path) in PROTECTED_ROUTES:
+        return True
+    return any(
+        method == pattern_method and pattern.match(path)
+        for pattern_method, pattern in PROTECTED_PATTERNS
+    )
+
 IDEMPOTENCY_HEADER = b"idempotency-key"
 REPLAY_HEADER = (b"x-idempotent-replay", b"true")
 IDEMPOTENCY_CONTAINER = "idempotency"
@@ -51,7 +67,7 @@ class IdempotencyMiddleware:
         self.app = app
 
     async def __call__(self, scope, receive, send) -> None:
-        if scope["type"] != "http" or (scope["method"], scope["path"]) not in PROTECTED_ROUTES:
+        if scope["type"] != "http" or not _is_protected(scope["method"], scope["path"]):
             await self.app(scope, receive, send)
             return
 

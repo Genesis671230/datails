@@ -1,0 +1,11 @@
+{
+  "_provisional": true,
+  "_note": "SYNTHETIC address-keyed fixture (intermediary wallet risk check).",
+  "mode": "risk_check",
+  "address": "bc1q0placeholder0suspect000000000000000000",
+  "chain": "bitcoin",
+  "risk_score": 0.68,
+  "risk_color": "yellow",
+  "entities": [],
+  "retrieved_at": "2026-07-09T00:00:00Z"
+}

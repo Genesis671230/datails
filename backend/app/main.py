@@ -19,6 +19,7 @@ from app.api.v1 import (
     learning_events,
     ledger,
     reports,
+    traces,
     workspaces,
 )
 from app.core.auth import EntraJwtMiddleware
@@ -80,6 +81,7 @@ def create_app() -> FastAPI:
     app.include_router(ai.router, prefix="/api/v1", tags=["ai"])
     app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
     app.include_router(learning_events.router, prefix="/api/v1", tags=["learning"])
+    app.include_router(traces.router, prefix="/api/v1", tags=["traces"])
     return app
 
 

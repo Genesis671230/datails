@@ -44,6 +44,7 @@ from app.db.repositories.cases import (
     list_case_findings,
     list_case_wallets,
 )
+from app.db.repositories.wallets import get_current_labels
 
 CHARS_PER_TOKEN = 4
 CACHE_TTL_SECONDS = 15 * 60
@@ -113,32 +114,6 @@ async def _cache_key(session: AsyncSession, case: Case) -> str:
     if label_max is not None:
         timestamps.append(label_max)
     return f"{case.id}:{max(timestamps).isoformat()}"
-
-
-async def _current_labels(
-    session: AsyncSession, wallet_ids: list[UUID]
-) -> dict[UUID, list[WalletLabel]]:
-    """Latest observation per (wallet, label) — labels are append-only (LD-14)."""
-    if not wallet_ids:
-        return {}
-    rows = (
-        (
-            await session.execute(
-                select(WalletLabel)
-                .where(WalletLabel.wallet_id.in_(wallet_ids))
-                .order_by(WalletLabel.observed_at.desc())
-            )
-        )
-        .scalars()
-        .all()
-    )
-    latest: dict[tuple[UUID, str], WalletLabel] = {}
-    for row in rows:
-        latest.setdefault((row.wallet_id, row.label), row)
-    grouped: dict[UUID, list[WalletLabel]] = {}
-    for label in latest.values():
-        grouped.setdefault(label.wallet_id, []).append(label)
-    return grouped
 
 
 async def _methodology_cues(
@@ -225,7 +200,7 @@ async def build_case_context(
     drafts = [f for f in findings if f.approved_at is None]
     decisions = await list_case_decisions(session, tenant_id, case_id)
     wallet_pairs = await list_case_wallets(session, tenant_id, case_id)
-    labels_by_wallet = await _current_labels(
+    labels_by_wallet = await get_current_labels(
         session, [wallet.id for _, wallet in wallet_pairs]
     )
     evidence = await list_case_evidence(session, tenant_id, case_id)

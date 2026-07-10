@@ -1,0 +1,17 @@
+{
+  "_provisional": true,
+  "_note": "SYNTHETIC address-keyed fixture (exchange deposit wallet risk check).",
+  "mode": "risk_check",
+  "address": "bc1q0placeholder0exchange00000000000000000",
+  "chain": "bitcoin",
+  "risk_score": 0.12,
+  "risk_color": "green",
+  "entities": [
+    {
+      "name": "Binance",
+      "category": "exchange",
+      "confidence": 0.97
+    }
+  ],
+  "retrieved_at": "2026-07-09T00:00:00Z"
+}

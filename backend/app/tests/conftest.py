@@ -125,7 +125,9 @@ async def client(app) -> AsyncClient:
     from app.core.auth import jwks_cache
 
     jwks_cache.seed(auth_utils.jwks_document())
-    transport = ASGITransport(app=app)
+    # raise_app_exceptions=False: unhandled server errors return the 500
+    # envelope exactly as in production, instead of re-raising into the test.
+    transport = ASGITransport(app=app, raise_app_exceptions=False)
     async with AsyncClient(transport=transport, base_url="http://testserver") as http_client:
         yield http_client
 

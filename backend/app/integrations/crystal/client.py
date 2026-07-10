@@ -48,7 +48,7 @@ class CrystalConnector(ConnectorClient):
 
         settings = get_settings()
         if settings.crystal_transport == "replay":
-            payload = load_crystal_fixture(mode)
+            payload = load_crystal_fixture(mode, address=params.get("address"))
             return self._normalize(payload, operation)
         return await self._execute_live(mode, params, secret)
 
