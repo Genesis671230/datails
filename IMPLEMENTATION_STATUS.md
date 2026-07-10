@@ -36,18 +36,28 @@ Details: `docs/build-log/2026-07-10-slice-3.md`.
 Remaining: the deploy half (Bicep completion, OIDC pipeline, rollback drill)
 and the loop run in Azure on the real AQ dataset — blocked on prerequisites.
 
-## Open blockers (all founder prerequisites)
+## Azure stamp (deployed 10 Jul 2026)
 
-- **Azure**: resource group (West Europe), Foundry access + GPT-4o/4o-mini
-  deployment verification (LD-23/24), Entra app registration, GitHub OIDC
-  federation → unblocks the Slice 3 deploy + live Slice 2 acceptance.
-- **Crystal temporary key** (LD-22) → unblocks the LD-6 spike → live Slice 1
-  acceptance + real recorded fixtures.
-- **Anonymised AQ dataset** → replaces the placeholder fixture; the demo
-  script runs on it verbatim.
-- **GitHub push**: token still lacks the `workflow` scope
-  (`gh auth refresh -h github.com -s workflow` needs an interactive
-  terminal — run it with the `!` prefix).
+Resource group `datails-dev` in **swedencentral** (LD-23 twice-amended — see
+DECISIONS.md): Key Vault (`datails-dev-kv`, holds `postgres-admin-password`),
+Storage `datailsdevsnap` (soft-delete 30d + versioning), Postgres 16
+`datails-dev-pg` (14-day PITR, Ready), Container Apps env, App Insights +
+Log Analytics, budget alert → insights@datails.ai. Foundry
+`datails-dev-foundry` with deployments `gpt-5-4` (100K TPM) and `gpt-5-mini`
+(150K TPM), DataZoneStandard (LD-24 amended — GPT-4o family undeployable).
+GitHub OIDC: app `datails-github-deploy` federated to
+`repo:datailstech/datails:ref:refs/heads/main`, Contributor on the RG; repo
+secrets AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID set.
+
+## Open blockers (founder prerequisites)
+
+- **Entra External ID tenant** (LD-1): portal-only creation — steps in the
+  Azure section of the Slice 3 build log; app registrations follow via CLI.
+- **Crystal temporary key** (LD-22) → LD-6 spike → live Slice 1 acceptance.
+- **Anonymised AQ dataset** → replaces the placeholder fixture.
+- Remaining Slice 3 deploy work now unblocked: AzureFoundryClient behind the
+  ModelClient interface, container deploy to ACA, deploy workflow, rollback
+  drill.
 
 ## Awaiting from founder (asked when a slice needs them)
 
