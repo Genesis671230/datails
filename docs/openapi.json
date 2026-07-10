@@ -1086,6 +1086,208 @@
           }
         }
       }
+    },
+    "/api/v1/cases/{case_id}/traces": {
+      "post": {
+        "tags": [
+          "traces"
+        ],
+        "summary": "Create Trace",
+        "operationId": "create_trace_api_v1_cases__case_id__traces_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TraceCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/traces/{trace_id}": {
+      "get": {
+        "tags": [
+          "traces"
+        ],
+        "summary": "Get Trace",
+        "operationId": "get_trace_api_v1_traces__trace_id__get",
+        "parameters": [
+          {
+            "name": "trace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trace Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/traces/{trace_id}/hops/{hop_id}/confirm": {
+      "post": {
+        "tags": [
+          "traces"
+        ],
+        "summary": "Confirm Hop",
+        "operationId": "confirm_hop_api_v1_traces__trace_id__hops__hop_id__confirm_post",
+        "parameters": [
+          {
+            "name": "trace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trace Id"
+            }
+          },
+          {
+            "name": "hop_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Hop Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/traces/{trace_id}/hops/{hop_id}/reject": {
+      "post": {
+        "tags": [
+          "traces"
+        ],
+        "summary": "Reject Hop",
+        "operationId": "reject_hop_api_v1_traces__trace_id__hops__hop_id__reject_post",
+        "parameters": [
+          {
+            "name": "trace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trace Id"
+            }
+          },
+          {
+            "name": "hop_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Hop Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1158,6 +1360,16 @@
         ],
         "title": "AssistantResponse"
       },
+      "AttributionMethod": {
+        "type": "string",
+        "enum": [
+          "fifo",
+          "lifo",
+          "pro_rata"
+        ],
+        "title": "AttributionMethod",
+        "description": "Trace attribution: FIFO in the pilot; alternatives are config (05 \u00a78)."
+      },
       "BootstrapRequest": {
         "properties": {
           "tenant_name": {
@@ -1175,6 +1387,17 @@
         },
         "type": "object",
         "title": "BootstrapRequest"
+      },
+      "BoundaryFlag": {
+        "type": "string",
+        "enum": [
+          "hot_wallet",
+          "mixer",
+          "chain_hop",
+          "internal_ledger"
+        ],
+        "title": "BoundaryFlag",
+        "description": "Human-judgment trace boundaries from operator evidence (05 \u00a78)."
       },
       "CaseCreate": {
         "properties": {
@@ -2675,6 +2898,19 @@
         "title": "RiskColor",
         "description": "Regulated / unregulated / sanctioned convention (05 \u00a71.2)."
       },
+      "RunStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "running",
+          "awaiting_confirmation",
+          "completed",
+          "failed",
+          "abandoned"
+        ],
+        "title": "RunStatus",
+        "description": "Workflow-agent run and trace state machine (LD-27)."
+      },
       "TenantOut": {
         "properties": {
           "id": {
@@ -2713,6 +2949,222 @@
           "learning_capture_enabled"
         ],
         "title": "TenantOut"
+      },
+      "TraceCreateRequest": {
+        "properties": {
+          "root_wallet_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Root Wallet Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "root_wallet_id"
+        ],
+        "title": "TraceCreateRequest"
+      },
+      "TraceDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "root_wallet_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Root Wallet Id"
+          },
+          "attribution_method": {
+            "$ref": "#/components/schemas/AttributionMethod"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RunStatus"
+          },
+          "workflow_agent_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workflow Agent Run Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "hops": {
+            "items": {
+              "$ref": "#/components/schemas/TraceHopOut"
+            },
+            "type": "array",
+            "title": "Hops"
+          },
+          "run_output": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Output"
+          },
+          "graph": {
+            "type": "object",
+            "title": "Graph"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "case_id",
+          "root_wallet_id",
+          "attribution_method",
+          "status",
+          "workflow_agent_run_id",
+          "created_at",
+          "hops",
+          "run_output",
+          "graph"
+        ],
+        "title": "TraceDetailOut"
+      },
+      "TraceHopOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "hop_index": {
+            "type": "integer",
+            "title": "Hop Index"
+          },
+          "from_wallet_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "From Wallet Id"
+          },
+          "to_wallet_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "To Wallet Id"
+          },
+          "tx_hash": {
+            "type": "string",
+            "title": "Tx Hash"
+          },
+          "asset": {
+            "type": "string",
+            "title": "Asset"
+          },
+          "chain": {
+            "type": "string",
+            "title": "Chain"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "confidence": {
+            "type": "string",
+            "title": "Confidence"
+          },
+          "evidence_refs_json": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Refs Json"
+          },
+          "boundary_flag": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BoundaryFlag"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/TraceHopStatus"
+          },
+          "confirmed_by": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed By"
+          },
+          "confirmed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "hop_index",
+          "from_wallet_id",
+          "to_wallet_id",
+          "tx_hash",
+          "asset",
+          "chain",
+          "amount",
+          "confidence",
+          "evidence_refs_json",
+          "boundary_flag",
+          "status",
+          "confirmed_by",
+          "confirmed_at",
+          "created_at"
+        ],
+        "title": "TraceHopOut"
+      },
+      "TraceHopStatus": {
+        "type": "string",
+        "enum": [
+          "proposed",
+          "confirmed",
+          "rejected"
+        ],
+        "title": "TraceHopStatus"
       },
       "TransferOut": {
         "properties": {

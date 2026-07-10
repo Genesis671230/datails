@@ -23,26 +23,31 @@ Last updated: 9 July 2026
 ## Current slice
 
 **Slice 2 — AI layer**: built and green on the deterministic mock backend
-(10 Jul 2026): context builder (LD-5), model router + task executor (every
-call logged), assistant endpoint (LD-20), reports draft/versions/approve
-with jurisdiction overlays and LD-17 types, consent-gated learning capture
-(LD-30), golden set (LD-29). 101 tests green. Details:
+(10 Jul 2026), including the founder-approved `POST /api/v1/learning-events`
+ingestion route. 106 tests at slice close. Details:
 `docs/build-log/2026-07-10-slice-2.md`.
+Remaining: swap mock → live Foundry after LD-23/24 verification; golden set
+re-runs unchanged.
 
-**Remaining for full Slice 2 acceptance:** swap the mock for the live
-Foundry backend once LD-23/24 verification lands, re-run the golden set.
+**Slice 3 — Trace loop + deploy**: trace loop complete on fixtures
+(10 Jul 2026): FIFO engine, trace routes, LD-27 state machine with
+interrupt/resume, explorer graph, named case-memory test. 117 tests green.
+Details: `docs/build-log/2026-07-10-slice-3.md`.
+Remaining: the deploy half (Bicep completion, OIDC pipeline, rollback drill)
+and the loop run in Azure on the real AQ dataset — blocked on prerequisites.
 
-## Open blockers
+## Open blockers (all founder prerequisites)
 
-- **LD-23/24 verification:** GPT-4o + GPT-4o-mini deployment availability and
-  quota in West Europe — needs founder Azure/Foundry access. The mock carries
-  everything else meanwhile.
-- Live Crystal acceptance for Slice 1: waiting on the temporary key (LD-22);
-  procedure in the Slice 1 build log.
-- **Founder question (Slice 2 build log):** frontend-action learning events
-  (assistant accept/reject, report edits) need an ingestion route not present
-  in the canonical endpoint list — add `POST /api/v1/learning-events`, or
-  defer to the frontend-contract work?
+- **Azure**: resource group (West Europe), Foundry access + GPT-4o/4o-mini
+  deployment verification (LD-23/24), Entra app registration, GitHub OIDC
+  federation → unblocks the Slice 3 deploy + live Slice 2 acceptance.
+- **Crystal temporary key** (LD-22) → unblocks the LD-6 spike → live Slice 1
+  acceptance + real recorded fixtures.
+- **Anonymised AQ dataset** → replaces the placeholder fixture; the demo
+  script runs on it verbatim.
+- **GitHub push**: token still lacks the `workflow` scope
+  (`gh auth refresh -h github.com -s workflow` needs an interactive
+  terminal — run it with the `!` prefix).
 
 ## Awaiting from founder (asked when a slice needs them)
 
