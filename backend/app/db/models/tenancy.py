@@ -29,8 +29,9 @@ class Tenant(Base):
     learning_capture_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     # v7 invisible fair-use backstop — schema hook only in the pilot (LD-21).
     credit_limit_usd: Mapped[Decimal | None] = mapped_column(Numeric(12, 2))
-    # Regional stamp assignment (LD-23).
-    region: Mapped[str] = mapped_column(String(50), default="westeurope")
+    # Regional stamp assignment (LD-23, amended 10 Jul 2026: pilot stamp is
+    # germanywestcentral — see DECISIONS.md).
+    region: Mapped[str] = mapped_column(String(50), default="germanywestcentral")
     metadata_json: Mapped[dict | None] = mapped_column("metadata", JSONB)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()

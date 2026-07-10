@@ -5,8 +5,8 @@
 // (backup retention), Blob soft-delete + versioning, Application Insights,
 // budget alert.
 
-@description('Azure region for the whole stamp (LD-23). Pilot: westeurope.')
-param location string = 'westeurope'
+@description('Azure region for the whole stamp (LD-23, amended 10 Jul 2026: westeurope offer-restricted/capacity-constrained for this subscription; founder ruled germanywestcentral).')
+param location string = 'germanywestcentral'
 
 @description('Deployment environment name (dev | prod).')
 param environmentName string = 'dev'
@@ -14,8 +14,8 @@ param environmentName string = 'dev'
 @description('Monthly budget alert threshold in USD (LD-29).')
 param monthlyBudgetUsd int = 500
 
-@description('Object ID granted Key Vault access during setup.')
-param adminObjectId string = ''
+@description('Email that receives budget alerts (Azure requires at least one contact).')
+param budgetContactEmail string
 
 @description('PostgreSQL administrator login (password via Key Vault, never in code).')
 param postgresAdminLogin string = 'datails_owner'
@@ -138,7 +138,7 @@ resource budget 'Microsoft.Consumption/budgets@2023-11-01' = {
         enabled: true
         operator: 'GreaterThan'
         threshold: 80
-        contactEmails: []
+        contactEmails: [budgetContactEmail]
       }
     }
   }

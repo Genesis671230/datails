@@ -79,7 +79,7 @@ async def test_bootstrap_creates_tenant_user_workspace(client) -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["tenant"]["name"] == "AQ Forensics"
-    assert body["tenant"]["region"] == "westeurope"
+    assert body["tenant"]["region"] == "germanywestcentral", "LD-23 as amended 10 Jul 2026"
     assert body["tenant"]["learning_capture_enabled"] is False, "LD-30 default"
     assert body["user"]["role"] == "owner"
     assert body["workspace"]["is_default"] is True
