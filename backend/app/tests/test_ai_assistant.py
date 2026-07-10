@@ -9,6 +9,7 @@ import uuid
 from sqlalchemy import select
 
 from app.db.models import AiCallLogEntry
+from app.services.ai.model_router import MODEL_FORMATTING, MODEL_REASONING
 from app.tests.helpers import bootstrap_tenant, create_case, idem_headers
 
 ASSISTANT = "/api/v1/ai/assistant"
@@ -26,7 +27,7 @@ async def test_assistant_returns_case_grounded_cited_answer(client, app_session)
     )
     assert response.status_code == 200, response.text
     body = response.json()
-    assert body["model"] == "gpt-4o", "research routes to the reasoning model (LD-24)"
+    assert body["model"] == MODEL_REASONING, "research routes to the reasoning model (LD-24)"
     assert f"case:{case['id']}" in body["source_refs"]
     assert "case_core" in body["output"], "draft must be grounded in case context"
 
@@ -36,7 +37,7 @@ async def test_assistant_returns_case_grounded_cited_answer(client, app_session)
         )
     ).scalar_one()
     assert entry.status == "completed"
-    assert entry.model_name == "gpt-4o"
+    assert entry.model_name == MODEL_REASONING
     assert len(entry.prompt_hash) == 64 and len(entry.response_hash) == 64
     assert entry.latency_ms is not None
     assert str(entry.case_id) == case["id"]
@@ -51,7 +52,7 @@ async def test_summarization_routes_to_formatting_model(client) -> None:
               "input": "Summarize the case"},
         headers=idem_headers(tenant),
     )
-    assert response.json()["model"] == "gpt-4o-mini", "formatting-heavy → cheaper model"
+    assert response.json()["model"] == MODEL_FORMATTING, "formatting-heavy → cheaper model"
 
 
 async def test_failed_model_call_is_logged(client, app_session) -> None:

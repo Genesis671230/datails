@@ -102,7 +102,8 @@ async def test_truncation_drops_lowest_priority_sections_first(
         headers=tenant.headers,
     )
 
-    tiny = model_router.TaskRoute("research_assistant", "gpt-4o", context_budget_tokens=150)
+    tiny = model_router.TaskRoute("research_assistant", model_router.MODEL_REASONING,
+                                  context_budget_tokens=150)
     monkeypatch.setattr(model_router, "_ROUTES", {**model_router._ROUTES,
                                                   "research_assistant": tiny})
     context = await build_case_context(

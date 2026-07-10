@@ -61,6 +61,19 @@ signed sprint document's AKS Bicep (founder took over the build, 9 Jul 2026).
 `methodologies.version` is sufficient for Phase 1 — no `methodology_versions`
 table.
 
+### LD-24 model pair substitution (founder ruling, 10 Jul 2026)
+
+LD-24's locked pair (GPT-4o reasoning / GPT-4o-mini formatting) proved
+undeployable: Azure lists every version of both models as lifecycle
+"Deprecating" — new deployments are refused and inference for existing ones
+ends 1 October 2026, inside the pilot window. Per the master prompt the
+conflict was raised, and the founder ruled: **gpt-5.4 (reasoning) +
+gpt-5-mini (formatting)**, deployed as `gpt-5-4` (100K TPM) and `gpt-5-mini`
+(150K TPM) on **DataZoneStandard** in West Europe (EU data zone — chosen
+over GlobalStandard for the European court-facing story, LD-23). LD-24's
+mechanism is unchanged: governed, region-bound, logged, routed per task
+type; code impact was two constants in `model_router.py`.
+
 ## Slice 0 build decisions
 
 ### Two-role database model for LD-3

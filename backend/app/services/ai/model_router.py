@@ -4,16 +4,20 @@ One table decides, per task type: which model serves it and how large its
 case-context budget is. No hidden model selection — the executor logs the
 routed model into ai_call_log on every call.
 
-Initial pair (LD-24): GPT-4o for reasoning-heavy tasks, GPT-4o-mini for
-formatting-heavy tasks, both via the Datails Azure AI Foundry instance in the
-tenant's region. Adding a model = a new entry here + a DECISIONS.md line —
-never an external or ungoverned endpoint.
+Initial pair (LD-24 as amended by founder ruling, 10 Jul 2026): gpt-5.4 for
+reasoning-heavy tasks, gpt-5-mini for formatting-heavy tasks, both deployed
+through the Datails Azure AI Foundry instance in the tenant's region
+(DataZoneStandard, EU data zone). The original GPT-4o pair became
+undeployable (Azure lifecycle: Deprecating, inference ends 2026-10-01) —
+see DECISIONS.md. Names below are the Foundry DEPLOYMENT names. Adding a
+model = a new entry here + a DECISIONS.md line — never an external or
+ungoverned endpoint.
 """
 
 from dataclasses import dataclass
 
-MODEL_REASONING = "gpt-4o"
-MODEL_FORMATTING = "gpt-4o-mini"
+MODEL_REASONING = "gpt-5-4"
+MODEL_FORMATTING = "gpt-5-mini"
 
 # LD-5: default context budget, configurable per task type. Never unbounded.
 DEFAULT_CONTEXT_BUDGET_TOKENS = 8_000

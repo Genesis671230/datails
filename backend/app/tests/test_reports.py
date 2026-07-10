@@ -6,6 +6,7 @@ import uuid
 from sqlalchemy import select
 
 from app.db.models import AiCallLogEntry, DecisionLedgerEvent
+from app.services.ai.model_router import MODEL_REASONING
 from app.tests.helpers import bootstrap_tenant, create_case, idem_headers
 
 DRAFT = "/api/v1/reports/draft"
@@ -51,7 +52,7 @@ async def test_draft_creates_report_and_cited_version(client, app_session) -> No
         .all()
     )
     assert len(entries) == 1
-    assert entries[0].model_name == "gpt-4o", "report drafting routes to reasoning model"
+    assert entries[0].model_name == MODEL_REASONING, "report drafting routes to reasoning model"
 
 
 async def test_sar_draft_type_supported(client) -> None:

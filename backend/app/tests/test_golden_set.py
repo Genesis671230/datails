@@ -8,6 +8,7 @@ backend now and the live Foundry backend later.
 
 import pytest
 
+from app.services.ai.model_router import MODEL_REASONING
 from app.tests.helpers import bootstrap_tenant, create_case, idem_headers
 
 # The golden set: case setup → report request → expected draft properties.
@@ -18,7 +19,7 @@ GOLDEN_CASES = (
                  "summary": "0.44 BTC traced to exchange deposit address."},
         "report": {"report_type": "freeze_blocklist_request",
                    "title": "Freeze request — exchange", "jurisdiction": "DE"},
-        "expect_model": "gpt-4o",
+        "expect_model": MODEL_REASONING,
     },
     {
         "id": "golden-2-sar-draft",
@@ -26,7 +27,7 @@ GOLDEN_CASES = (
                  "summary": "Multiple rapid transfers through fresh wallets."},
         "report": {"report_type": "sar_draft", "title": "SAR draft",
                    "jurisdiction": "AT"},
-        "expect_model": "gpt-4o",
+        "expect_model": MODEL_REASONING,
     },
     {
         "id": "golden-3-police-intake",
@@ -34,14 +35,14 @@ GOLDEN_CASES = (
                  "summary": "Victim intake per the five W's completed."},
         "report": {"report_type": "police_intake", "title": "Police intake report",
                    "jurisdiction": "DE"},
-        "expect_model": "gpt-4o",
+        "expect_model": MODEL_REASONING,
     },
     {
         "id": "golden-4-investigator-summary",
         "case": {"title": "Ongoing trace — status summary",
                  "summary": "Two confirmed hops; hot-wallet boundary reached."},
         "report": {"report_type": "investigator_summary", "title": "Status summary"},
-        "expect_model": "gpt-4o",
+        "expect_model": MODEL_REASONING,
     },
 )
 
@@ -90,4 +91,4 @@ async def test_golden_assistant_answer_properties(client) -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["source_refs"], "assistant answers must carry source references"
-    assert body["model"] == "gpt-4o"
+    assert body["model"] == MODEL_REASONING
