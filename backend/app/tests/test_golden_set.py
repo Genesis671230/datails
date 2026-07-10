@@ -2,14 +2,29 @@
 
 Fixed cases with expected report-draft properties, run on any prompt or
 model-routing change. Asserts structural draft properties (grounding,
-citations, routing, status), not exact wording — stable across the mock
-backend now and the live Foundry backend later.
+citations, routing, status), not exact wording — the same suite runs on the
+mock backend (CI) and the live Foundry backend (AI_BACKEND=azure_foundry).
+
+Grounding assertion by backend: the mock echoes context section names; a
+live model is held to the product property instead — a substantive draft
+that carries [ref:...] source citations (the Report Writer rule).
 """
 
 import pytest
 
+from app.core.config import get_settings
 from app.services.ai.model_router import MODEL_REASONING
 from app.tests.helpers import bootstrap_tenant, create_case, idem_headers
+
+MIN_LIVE_DRAFT_CHARS = 200
+
+
+def _assert_grounded(content: str) -> None:
+    if get_settings().ai_backend == "mock":
+        assert "case_core" in content, "mock echoes the context sections"
+    else:
+        assert len(content) >= MIN_LIVE_DRAFT_CHARS, "live draft must be substantive"
+        assert "[ref:" in content, "live draft must cite [ref:...] sources"
 
 # The golden set: case setup → report request → expected draft properties.
 GOLDEN_CASES = (
@@ -69,7 +84,7 @@ async def test_golden_report_draft_properties(client, golden) -> None:
     # draft content reflects the case context sections.
     refs = version["source_refs_json"]["refs"]
     assert f"case:{case['id']}" in refs
-    assert "case_core" in version["content_markdown"]
+    _assert_grounded(version["content_markdown"])
     # Jurisdiction recorded when requested.
     expected_jurisdiction = golden["report"].get("jurisdiction")
     assert report["jurisdiction"] == expected_jurisdiction

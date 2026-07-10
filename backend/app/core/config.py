@@ -52,11 +52,14 @@ class Settings(BaseSettings):
     secrets_backend: Literal["local_env", "azure_key_vault"] = "local_env"
 
     # AI model backend. "mock" is deterministic for dev/CI; "azure_foundry"
-    # arrives once GPT-4o/4o-mini West Europe deployments are verified
-    # (LD-23/24). The mock is refused outside local environments.
+    # calls the Datails Foundry instance (LD-24: Azure-hosted models only).
+    # The mock is refused outside local environments.
     ai_backend: Literal["mock", "azure_foundry"] = "mock"
-    foundry_endpoint: str = ""
-    foundry_api_version: str = ""
+    foundry_endpoint: str = ""  # e.g. https://datails-dev-foundry.cognitiveservices.azure.com
+    foundry_api_version: str = "2024-10-21"
+    # API key resolved through the secret resolver (env locally, Key Vault in
+    # Azure). Managed identity replaces the key at the ACA deploy.
+    foundry_secret_ref: str = "FOUNDRY_API_KEY"
 
     # Crystal connector (LD-22). Transport "replay" serves recorded fixtures
     # (dev/CI); "live" calls the real API using the shared temporary key

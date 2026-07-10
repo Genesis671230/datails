@@ -22,12 +22,15 @@ Last updated: 9 July 2026
 
 ## Current slice
 
-**Slice 2 — AI layer**: built and green on the deterministic mock backend
-(10 Jul 2026), including the founder-approved `POST /api/v1/learning-events`
-ingestion route. 106 tests at slice close. Details:
+**Slice 2 — AI layer**: **fully accepted, incl. live models** (10 Jul 2026).
+Mock-backed build + founder-approved `POST /api/v1/learning-events`; then
+AzureFoundryClient behind the ModelClient interface, and the golden set
+passed against the live `gpt-5-4`/`gpt-5-mini` deployments in swedencentral
+(substantive, `[ref:...]`-cited drafts; complete ai_call_log rows). CI stays
+on the mock; the live golden run is repeatable via
+`AI_BACKEND=azure_foundry` + `FOUNDRY_ENDPOINT` + `FOUNDRY_API_KEY` (Key
+Vault secret `foundry-api-key`). Details:
 `docs/build-log/2026-07-10-slice-2.md`.
-Remaining: swap mock → live Foundry after LD-23/24 verification; golden set
-re-runs unchanged.
 
 **Slice 3 — Trace loop + deploy**: trace loop complete on fixtures
 (10 Jul 2026): FIFO engine, trace routes, LD-27 state machine with

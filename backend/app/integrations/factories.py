@@ -31,10 +31,9 @@ def get_model_client() -> ModelClient:
     settings = get_settings()
     if settings.ai_backend == "mock":
         return MockModelClient()
-    raise NotImplementedError(
-        "azure_foundry backend arrives after the LD-23/24 deployment "
-        "verification (Foundry endpoint + GPT-4o/4o-mini quota in West Europe)"
-    )
+    from app.integrations.azure_foundry.client import AzureFoundryClient
+
+    return AzureFoundryClient()
 
 
 @lru_cache
