@@ -5,8 +5,8 @@
 // (backup retention), Blob soft-delete + versioning, Application Insights,
 // budget alert.
 
-@description('Azure region for the whole stamp (LD-23, amended 10 Jul 2026: westeurope offer-restricted/capacity-constrained for this subscription; founder ruled germanywestcentral).')
-param location string = 'germanywestcentral'
+@description('Azure region for the whole stamp (LD-23, twice-amended 10 Jul 2026: westeurope and germanywestcentral both blocked Postgres for this subscription; founder ruled swedencentral — see DECISIONS.md).')
+param location string = 'swedencentral'
 
 @description('Deployment environment name (dev | prod).')
 param environmentName string = 'dev'

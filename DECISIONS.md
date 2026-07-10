@@ -61,18 +61,22 @@ signed sprint document's AKS Bicep (founder took over the build, 9 Jul 2026).
 `methodologies.version` is sufficient for Phase 1 — no `methodology_versions`
 table.
 
-### LD-23 region amendment (founder ruling, 10 Jul 2026)
+### LD-23 region amendment (founder rulings, 10 Jul 2026 — final: swedencentral)
 
 West Europe could not host the full pilot stamp: the subscription is
-offer-restricted for PostgreSQL Flexible Server provisioning there
-(`LocationIsOfferRestricted`), and Container Apps hit the regional AKS
-capacity crunch (`ManagedEnvironmentCapacityHeavyUsageError`). Candidates
-verified for the complete stamp (Postgres SKUs + gpt-5.4/gpt-5-mini on
-DataZoneStandard): Germany West Central and Sweden Central. Founder ruled:
-**germanywestcentral** (Frankfurt) — deployable today and consistent with
-the German court-facing cohort story. LD-23's structure is unchanged: one
-self-contained regional stamp, region stays a Bicep parameter, EU data zone
-for inference; `tenants.region` default updated accordingly.
+offer-restricted for PostgreSQL Flexible Server (`LocationIsOfferRestricted`)
+and Container Apps hit the regional AKS capacity crunch. Founder first ruled
+**germanywestcentral** — where everything deployed except Postgres, which
+turned out to be offer-restricted there too (the restriction is per
+subscription-offer and invisible to SKU/capability queries; only a create
+attempt reveals it). An actual B2s probe server provisioned successfully in
+**Sweden Central**, which also serves gpt-5.4 + gpt-5-mini on
+DataZoneStandard. Founder ruled: **swedencentral** — deployable today,
+self-contained stamp preserved, EU data zone. If the pilot later wants a
+Frankfurt stamp, file the Postgres quota exception for germanywestcentral
+(https://aka.ms/postgres-request-quota-increase) and redeploy the same
+templates. LD-23's structure is unchanged: region stays a Bicep parameter;
+`tenants.region` default updated accordingly.
 
 ### LD-24 model pair substitution (founder ruling, 10 Jul 2026)
 
