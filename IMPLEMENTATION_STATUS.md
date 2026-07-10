@@ -52,15 +52,37 @@ GitHub OIDC: app `datails-github-deploy` federated to
 `repo:datailstech/datails:ref:refs/heads/main`, Contributor on the RG; repo
 secrets AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID set.
 
+## Entra External ID (LD-1, verified 10 Jul 2026)
+
+Tenant `194ac953-cb8a-4e07-9890-65e73d2c024d` (`datails.onmicrosoft.com`,
+created in Germany, EU data location). App registrations:
+- **API** `Datails Backend API` — appId `00d8c4ff-db9c-4533-b344-48e08cf3af73`,
+  scope `api://00d8c4ff-…/access_as_user`
+- **SPA** `Datails Workspace (SPA)` — appId `01c24144-4b73-41df-b51d-592eb1e85785`,
+  redirects `http://localhost:8765/callback`, `http://localhost:3000`;
+  delegated: API scope + openid basics; admin-consented
+
+Backend config (see `backend/scripts/run_backend_entra.sh`):
+`ENTRA_AUTHORITY=https://<tenant-id>.ciamlogin.com/<tenant-id>/v2.0`
+(= token issuer), `ENTRA_JWKS_URL=https://datails.ciamlogin.com/<tenant-id>/discovery/v2.0/keys`,
+`ENTRA_AUDIENCE=<API appId>`.
+
+**LD-26 PKCE real-token test: PASS** (`backend/scripts/pkce_login_test.py`):
+genuine auth-code+PKCE flow as local customer account
+`test.investigator@datails.onmicrosoft.com` → real token accepted by the
+backend (bootstrap 200 creating tenant `pkce-test-tenant` with owner role;
+me 200; tampered token 401). Frontend-relevant findings: workforce/admin
+accounts cannot redeem CIAM tokens (AADSTS399266) — investigators must be
+local accounts; SPA-platform code redemption requires a cross-origin
+request (browser default; scripts need an Origin header).
+
 ## Open blockers (founder prerequisites)
 
-- **Entra External ID tenant** (LD-1): portal-only creation — steps in the
-  Azure section of the Slice 3 build log; app registrations follow via CLI.
 - **Crystal temporary key** (LD-22) → LD-6 spike → live Slice 1 acceptance.
 - **Anonymised AQ dataset** → replaces the placeholder fixture.
-- Remaining Slice 3 deploy work now unblocked: AzureFoundryClient behind the
-  ModelClient interface, container deploy to ACA, deploy workflow, rollback
-  drill.
+- Remaining Slice 3 deploy work, now fully unblocked: backend container
+  deploy to ACA + deploy workflow over the OIDC federation, rollback drill,
+  full loop in Azure.
 
 ## Awaiting from founder (asked when a slice needs them)
 
