@@ -22,27 +22,27 @@ Last updated: 9 July 2026
 
 ## Current slice
 
-**Slice 2 — AI layer** (not started; gated on model-deployment verification)
+**Slice 2 — AI layer**: built and green on the deterministic mock backend
+(10 Jul 2026): context builder (LD-5), model router + task executor (every
+call logged), assistant endpoint (LD-20), reports draft/versions/approve
+with jurisdiction overlays and LD-17 types, consent-gated learning capture
+(LD-30), golden set (LD-29). 101 tests green. Details:
+`docs/build-log/2026-07-10-slice-2.md`.
 
-- [ ] Context builder (LD-5: 8k budget, inclusion priority, 15-min in-process
-      cache, source refs out)
-- [ ] Foundry client wrapper + `model_router.py` (GPT-4o / GPT-4o-mini,
-      LD-24); every call → `ai_call_log`
-- [ ] `POST /api/v1/ai/assistant` (LD-20)
-- [ ] Reports: draft + versions + approve; types incl.
-      `freeze_blocklist_request`, `sar_draft` (LD-17); jurisdiction variant
-      at draft time
-- [ ] Learning-event capture gated by `learning_capture_enabled` (LD-30)
-- [ ] Golden-set smoke test (LD-29)
+**Remaining for full Slice 2 acceptance:** swap the mock for the live
+Foundry backend once LD-23/24 verification lands, re-run the golden set.
 
 ## Open blockers
 
-- **Slice 2 day-one verification (LD-23/24):** GPT-4o + GPT-4o-mini
-  deployment availability and quota in West Europe must be confirmed before
-  Slice 2 — needs the Azure/Foundry access. Local Foundry mock can carry
-  development, but the founder verification is a named LD-23 gate.
+- **LD-23/24 verification:** GPT-4o + GPT-4o-mini deployment availability and
+  quota in West Europe — needs founder Azure/Foundry access. The mock carries
+  everything else meanwhile.
 - Live Crystal acceptance for Slice 1: waiting on the temporary key (LD-22);
   procedure in the Slice 1 build log.
+- **Founder question (Slice 2 build log):** frontend-action learning events
+  (assistant accept/reject, report edits) need an ingestion route not present
+  in the canonical endpoint list — add `POST /api/v1/learning-events`, or
+  defer to the frontend-contract work?
 
 ## Awaiting from founder (asked when a slice needs them)
 

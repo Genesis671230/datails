@@ -830,10 +830,293 @@
           }
         }
       }
+    },
+    "/api/v1/ai/assistant": {
+      "post": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Assistant",
+        "operationId": "assistant_api_v1_ai_assistant_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/draft": {
+      "post": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "Draft Report",
+        "operationId": "draft_report_api_v1_reports_draft_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportDraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDraftResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{report_id}": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "Get Report",
+        "operationId": "get_report_api_v1_reports__report_id__get",
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{report_id}/versions": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "Get Versions",
+        "operationId": "get_versions_api_v1_reports__report_id__versions_get",
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportVersionOut"
+                  },
+                  "title": "Response Get Versions Api V1 Reports  Report Id  Versions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{report_id}/approve": {
+      "post": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "Approve Report",
+        "operationId": "approve_report_api_v1_reports__report_id__approve_post",
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AssistantRequest": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "task_type": {
+            "type": "string",
+            "title": "Task Type",
+            "default": "research_assistant"
+          },
+          "input": {
+            "type": "string",
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Input"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "input"
+        ],
+        "title": "AssistantRequest"
+      },
+      "AssistantResponse": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "task_type": {
+            "type": "string",
+            "title": "Task Type"
+          },
+          "output": {
+            "type": "string",
+            "title": "Output"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Source Refs"
+          },
+          "ai_call_log_id": {
+            "type": "integer",
+            "title": "Ai Call Log Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "task_type",
+          "output",
+          "model",
+          "source_refs",
+          "ai_call_log_id"
+        ],
+        "title": "AssistantResponse"
+      },
       "BootstrapRequest": {
         "properties": {
           "tenant_name": {
@@ -2037,6 +2320,217 @@
           "confidence"
         ],
         "title": "LabelOut"
+      },
+      "ReportDraftRequest": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "report_type": {
+            "$ref": "#/components/schemas/ReportType"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "jurisdiction": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdiction"
+          },
+          "instructions": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instructions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "report_type",
+          "title"
+        ],
+        "title": "ReportDraftRequest"
+      },
+      "ReportDraftResponse": {
+        "properties": {
+          "report": {
+            "$ref": "#/components/schemas/ReportOut"
+          },
+          "version": {
+            "$ref": "#/components/schemas/ReportVersionOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "report",
+          "version"
+        ],
+        "title": "ReportDraftResponse"
+      },
+      "ReportOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "report_type": {
+            "$ref": "#/components/schemas/ReportType"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReportStatus"
+          },
+          "jurisdiction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdiction"
+          },
+          "current_version_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Version Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "case_id",
+          "report_type",
+          "title",
+          "status",
+          "jurisdiction",
+          "current_version_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ReportOut"
+      },
+      "ReportStatus": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "in_review",
+          "approved",
+          "final"
+        ],
+        "title": "ReportStatus"
+      },
+      "ReportType": {
+        "type": "string",
+        "enum": [
+          "police_intake",
+          "exchange_compliance_request",
+          "freeze_blocklist_request",
+          "investigator_summary",
+          "case_dossier",
+          "sar_draft"
+        ],
+        "title": "ReportType",
+        "description": "05 \u00a71.4: freeze_blocklist_request and sar_draft are first-class (LD-17)."
+      },
+      "ReportVersionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "report_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Report Id"
+          },
+          "version_number": {
+            "type": "integer",
+            "title": "Version Number"
+          },
+          "content_markdown": {
+            "type": "string",
+            "title": "Content Markdown"
+          },
+          "source_refs_json": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Refs Json"
+          },
+          "generated_by_ai": {
+            "type": "boolean",
+            "title": "Generated By Ai"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "report_id",
+          "version_number",
+          "content_markdown",
+          "source_refs_json",
+          "generated_by_ai",
+          "created_at"
+        ],
+        "title": "ReportVersionOut"
       },
       "RiskColor": {
         "type": "string",

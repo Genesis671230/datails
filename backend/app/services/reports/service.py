@@ -20,11 +20,13 @@ from app.core.logging import get_logger, log_fields
 from app.db.models import Report, ReportVersion
 from app.db.models.enums import (
     DecisionLedgerEventType,
+    LearningEventType,
     ReportStatus,
     ReportType,
 )
 from app.db.repositories.cases import get_case
 from app.services.ai.task_executor import execute_case_task
+from app.services.ledgers.learning import capture_learning_event
 from app.services.ledgers.writers import write_decision_event
 from app.services.reports.jurisdictions import jurisdiction_overlay
 from app.services.reports.prompts import drafting_instructions
@@ -141,6 +143,19 @@ async def approve_report(
         inputs_ref={"report_id": str(report.id),
                     "version_id": str(report.current_version_id)},
         approved=True,
+    )
+    # LD-30: consent-gated capture, same transaction as the approval.
+    await capture_learning_event(
+        session,
+        tenant_id=tenant_id,
+        workspace_id=report.workspace_id,
+        case_id=report.case_id,
+        actor_id=user_id,
+        event_type=LearningEventType.DRAFT_APPROVED,
+        subject_type="report",
+        subject_id=str(report.id),
+        payload={"report_type": report.report_type.value,
+                 "version_id": str(report.current_version_id)},
     )
     await session.commit()
     await session.refresh(report)
