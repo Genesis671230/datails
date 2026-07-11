@@ -17,6 +17,18 @@ param monthlyBudgetUsd int = 500
 @description('Email that receives budget alerts (Azure requires at least one contact).')
 param budgetContactEmail string
 
+@description('Deploy the container app + migrate job (false on the first run, before an image exists in ACR).')
+param deployApps bool = false
+
+@description('Backend image tag in ACR (set by the deploy workflow).')
+param imageTag string = 'latest'
+
+@description('Entra External ID tenant ID (LD-1).')
+param entraTenantId string = '194ac953-cb8a-4e07-9890-65e73d2c024d'
+
+@description('Entra audience = API app registration client ID (LD-1).')
+param entraAudience string = '00d8c4ff-db9c-4533-b344-48e08cf3af73'
+
 @description('PostgreSQL administrator login (password via Key Vault, never in code).')
 param postgresAdminLogin string = 'datails_owner'
 
@@ -118,8 +130,177 @@ resource containerAppsEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
   }
 }
 
-// Backend container app: image + env wiring completed at Slice 3 deploy.
-// Kept as skeleton so the stamp shape is reviewable now.
+// Postgres runs with public access; this built-in rule admits only
+// Azure-internal traffic (the container apps). Founder/dev access is a
+// separate explicit rule added via CLI when needed.
+resource pgAllowAzure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-12-01-preview' = {
+  parent: postgres
+  name: 'AllowAllAzureServicesAndResourcesWithinAzureIps'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
+
+// --- Container registry -------------------------------------------------------
+
+resource acr 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
+  name: '${storagePrefix}acr'
+  location: location
+  sku: { name: 'Basic' }
+  properties: {
+    adminUserEnabled: false
+  }
+}
+
+// --- Backend container app + migration job (LD-25) ------------------------------
+
+// User-assigned identity, created and role-granted BEFORE the apps: with a
+// system-assigned identity the first revision pulls the image before its
+// AcrPull/KV grants exist and provisioning expires.
+resource appIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${prefix}-app-identity'
+  location: location
+}
+
+var backendImage = '${acr.properties.loginServer}/datails-backend:${imageTag}'
+var entraAuthority = 'https://${entraTenantId}.ciamlogin.com/${entraTenantId}/v2.0'
+var entraJwksUrl = 'https://datails.ciamlogin.com/${entraTenantId}/discovery/v2.0/keys'
+
+var appSecrets = [
+  {
+    name: 'database-url'
+    keyVaultUrl: '${keyVault.properties.vaultUri}secrets/database-url'
+    identity: appIdentity.id
+  }
+  {
+    name: 'database-migration-url'
+    keyVaultUrl: '${keyVault.properties.vaultUri}secrets/database-migration-url'
+    identity: appIdentity.id
+  }
+  {
+    name: 'foundry-api-key'
+    keyVaultUrl: '${keyVault.properties.vaultUri}secrets/foundry-api-key'
+    identity: appIdentity.id
+  }
+]
+
+var commonEnv = [
+  { name: 'ENVIRONMENT', value: environmentName }
+  { name: 'DATABASE_URL', secretRef: 'database-url' }
+  { name: 'DATABASE_MIGRATION_URL', secretRef: 'database-migration-url' }
+  { name: 'AI_BACKEND', value: 'azure_foundry' }
+  { name: 'FOUNDRY_ENDPOINT', value: 'https://datails-dev-foundry.cognitiveservices.azure.com' }
+  { name: 'FOUNDRY_API_KEY', secretRef: 'foundry-api-key' }
+  { name: 'ENTRA_TENANT_ID', value: entraTenantId }
+  { name: 'ENTRA_AUTHORITY', value: entraAuthority }
+  { name: 'ENTRA_JWKS_URL', value: entraJwksUrl }
+  { name: 'ENTRA_AUDIENCE', value: entraAudience }
+  { name: 'BLOB_BACKEND', value: 'local' } // Azure Blob backend lands with the Slice 1 live acceptance
+]
+
+resource backendApp 'Microsoft.App/containerApps@2024-03-01' = if (deployApps) {
+  name: '${prefix}-api'
+  location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: { '${appIdentity.id}': {} }
+  }
+  dependsOn: [identityAcrPull, identityKvRead]
+  properties: {
+    managedEnvironmentId: containerAppsEnv.id
+    configuration: {
+      ingress: {
+        external: true
+        targetPort: 8000
+        transport: 'auto'
+      }
+      registries: [
+        {
+          server: acr.properties.loginServer
+          identity: appIdentity.id
+        }
+      ]
+      secrets: appSecrets
+    }
+    template: {
+      containers: [
+        {
+          name: 'backend'
+          image: backendImage
+          resources: { cpu: json('0.5'), memory: '1Gi' }
+          env: commonEnv
+        }
+      ]
+      scale: { minReplicas: 1, maxReplicas: 2 }
+    }
+  }
+}
+
+resource migrateJob 'Microsoft.App/jobs@2024-03-01' = if (deployApps) {
+  name: '${prefix}-migrate'
+  location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: { '${appIdentity.id}': {} }
+  }
+  dependsOn: [identityAcrPull, identityKvRead]
+  properties: {
+    environmentId: containerAppsEnv.id
+    configuration: {
+      triggerType: 'Manual'
+      replicaTimeout: 600
+      replicaRetryLimit: 0
+      manualTriggerConfig: { parallelism: 1, replicaCompletionCount: 1 }
+      registries: [
+        {
+          server: acr.properties.loginServer
+          identity: appIdentity.id
+        }
+      ]
+      secrets: appSecrets
+    }
+    template: {
+      containers: [
+        {
+          name: 'migrate'
+          image: backendImage
+          command: ['alembic', 'upgrade', 'head']
+          resources: { cpu: json('0.5'), memory: '1Gi' }
+          env: commonEnv
+        }
+      ]
+    }
+  }
+}
+
+// Managed-identity grants: image pull + Key Vault secret reads.
+var acrPullRole = subscriptionResourceId(
+  'Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+)
+var kvSecretsUserRole = subscriptionResourceId(
+  'Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6'
+)
+
+resource identityAcrPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: acr
+  name: guid(acr.id, 'acrpull', appIdentity.name)
+  properties: {
+    roleDefinitionId: acrPullRole
+    principalId: appIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource identityKvRead 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: keyVault
+  name: guid(keyVault.id, 'kvread', appIdentity.name)
+  properties: {
+    roleDefinitionId: kvSecretsUserRole
+    principalId: appIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
 
 // --- Budget alert (LD-29) ------------------------------------------------------
 
@@ -149,3 +330,5 @@ output storageAccountName string = storage.name
 output postgresServerName string = postgres.name
 output containerAppsEnvironmentId string = containerAppsEnv.id
 output appInsightsConnectionString string = appInsights.properties.ConnectionString
+output acrLoginServer string = acr.properties.loginServer
+output backendFqdn string = deployApps ? backendApp.properties.configuration.ingress.fqdn : ''

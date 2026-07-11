@@ -1,11 +1,13 @@
 # CI: lint + tests against a real Postgres, publish the OpenAPI contract
-# artifact (LD-26). Green CI is part of every slice gate (LD-10).
+# artifact (LD-26), then deploy main to Azure Container Apps via OIDC —
+# tests gate the deploy (LD-10). Rollback: see docs/RUNBOOK.md.
 name: CI
 
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -62,3 +64,62 @@ jobs:
         with:
           name: openapi-spec
           path: docs/openapi.json
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build image in ACR
+        run: |
+          az acr build --registry datailsdevacr \
+            --image datails-backend:${{ github.sha }} \
+            --image datails-backend:latest backend/
+
+      - name: Run migration job
+        run: |
+          az containerapp job update -g datails-dev -n datails-dev-migrate \
+            --image datailsdevacr.azurecr.io/datails-backend:${{ github.sha }} -o none
+          EXEC=$(az containerapp job start -g datails-dev -n datails-dev-migrate --query name -o tsv)
+          echo "migration execution: $EXEC"
+          for i in $(seq 1 60); do
+            STATUS=$(az containerapp job execution show -g datails-dev -n datails-dev-migrate \
+              --job-execution-name "$EXEC" --query 'properties.status' -o tsv)
+            echo "  $STATUS"
+            case "$STATUS" in
+              Succeeded) exit 0 ;;
+              Failed|Stopped|Degraded) echo "migration failed"; exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "migration timed out"; exit 1
+
+      - name: Deploy new revision
+        run: |
+          az containerapp update -g datails-dev -n datails-dev-api \
+            --image datailsdevacr.azurecr.io/datails-backend:${{ github.sha }} -o none
+
+      - name: Smoke check
+        run: |
+          FQDN=$(az containerapp show -g datails-dev -n datails-dev-api \
+            --query 'properties.configuration.ingress.fqdn' -o tsv)
+          for i in $(seq 1 30); do
+            CODE=$(curl -s -o /dev/null -w '%{http_code}' "https://$FQDN/api/v1/health")
+            [ "$CODE" = "200" ] && echo "health OK on https://$FQDN" && exit 0
+            sleep 5
+          done
+          echo "health check failed"; exit 1
