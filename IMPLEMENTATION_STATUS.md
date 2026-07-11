@@ -76,13 +76,27 @@ accounts cannot redeem CIAM tokens (AADSTS399266) — investigators must be
 local accounts; SPA-platform code redemption requires a cross-origin
 request (browser default; scripts need an Origin header).
 
+## Deploy pipeline (live, 11 Jul 2026)
+
+Backend running in Azure:
+`https://datails-dev-api.ambitiousglacier-9ed1fc18.swedencentral.azurecontainerapps.io`
+(health ok, database ok, Entra auth enforced — 401 without a valid token).
+Pipeline: push to main → CI tests → `az acr build` → migration job
+(`datails-dev-migrate`, gates the deploy) → new revision → health smoke.
+Proven end-to-end on run 29147734727. **Rollback drill passed** (traffic
+shift to previous revision and back, ≈1 min; multiple-revision mode).
+RUNBOOK filled with real names and commands. Bicep uses a user-assigned
+identity (created+granted before the apps — system-assigned hits a
+pull-before-grant race). Federated credentials: `ref:refs/heads/main` and
+`environment:dev`.
+
 ## Open blockers (founder prerequisites)
 
-- **Crystal temporary key** (LD-22) → LD-6 spike → live Slice 1 acceptance.
-- **Anonymised AQ dataset** → replaces the placeholder fixture.
-- Remaining Slice 3 deploy work, now fully unblocked: backend container
-  deploy to ACA + deploy workflow over the OIDC federation, rollback drill,
-  full loop in Azure.
+- **Crystal temporary key** (LD-22) → LD-6 spike → live Slice 1 acceptance
+  (Azure Blob backend for snapshots lands with that work; the deployed app
+  currently runs `BLOB_BACKEND=local` = container-local, pilot-dev only).
+- **Anonymised AQ dataset** → replaces the placeholder fixture; then the
+  full demonstrable loop runs in Azure (the last Slice 3 acceptance item).
 
 ## Awaiting from founder (asked when a slice needs them)
 
