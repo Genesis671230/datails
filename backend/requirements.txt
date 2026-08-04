@@ -10,5 +10,5 @@ asyncpg==0.30.0
 alembic==1.14.0
 PyJWT[crypto]==2.10.1
 # Pinned: newer cryptography releases ship no macOS x86_64 wheel (local dev).
-cryptography==44.0.0
+cryptography==50.0.0
 httpx==0.28.1
